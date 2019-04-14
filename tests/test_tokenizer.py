@@ -26,10 +26,11 @@ def test7():
     assert t.tokenize("varB = -4i - 4") == ["varB", "=", "-", "4", "i", "-", "4"]
 
 def test8():
-    assert t.tokenize("varA = [[2,3];[4,3]]") == ["varA", "=", "[[2,3];[4,3]]"]
+    assert t.tokenize("varA = [[2,3];[4,3]]") == ["varA", "=", "[", "[", "2", ",", "3",
+                                                  "]", ";", "[", "4", ",", "3", "]", "]"]
 
 def test9():
-    assert t.tokenize("varB = [[3,4]]") == ["varB", "=", "[[3,4]]"]
+    assert t.tokenize("varB = [[3,4]]") == ["varB", "=", "[", "[", "3", ",", "4", "]", "]"]
 
 def test10():
     assert t.tokenize("funA(x) = 2*x^5 + 4x^2 - 5*x + 4") == ["funA", "(", "x", ")", "=", "2", "*", "x", "^", "5",
@@ -57,7 +58,8 @@ def test16():
                                                            '-', '4', '/', '3', ')']
 
 def test17():
-    assert t.tokenize("matA = [[1,2];[3,2];[3,4]]") == ["matA", "=", "[[1,2];[3,2];[3,4]]"]
+    assert t.tokenize("matA = [[1.51,2];[3i,2.16];[3,4]]") == ["matA", "=", "[", "[", "1.51", ",", "2", "]", ";",
+                                                              "[", "3", "i", ",", "2.16", "]", ";", "[", "3",  ",", "4", "]", "]"]
 
 def test18():
     assert t.tokenize("funC(y) =2* y     + 4  -2 **   4+9/3") == ["funC", "(", "y", ")", "=", "2", "*", "y",
@@ -68,26 +70,10 @@ def test19():
     assert t.tokenize("k =?hello + (boo / % = 1.3i)) * ** * *") == ["k", '=', '?', 'hello', '+', '(', 'boo', '/', '%',
                                                                     '=', '1.3', 'i', ')', ')', '*', '**', '*', '*']
 
-def test21():
-    with pytest.raises(UnknownToken):
-        t.tokenize("[[1,2];[3,2];[3,4]")
-
-def test22():
-    with pytest.raises(UnknownToken):
-        t.tokenize("[1,2];[3,2];[3,4]]")
-
-def test23():
-    with pytest.raises(UnknownToken):
-        t.tokenize("[1,2];[3,2];[3,4]")
-
-def test24():
-    with pytest.raises(UnknownToken):
-        t.tokenize(";")
-
 def test25():
     with pytest.raises(UnknownToken):
-        t.tokenize("2!4")
+        t.tokenize(".")
 
 def test26():
     with pytest.raises(UnknownToken):
-        t.tokenize("]2, 4]")
+        t.tokenize("hello_world = 2")

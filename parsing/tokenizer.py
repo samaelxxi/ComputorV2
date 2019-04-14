@@ -5,7 +5,7 @@ Contains Tokenizer class, which has only tokenize method
 from string import whitespace
 from exceptions.parsing_exceptions import UnknownToken
 
-ONE_CHAR_TOKENS = ["+", "-", "*", "/", "%", "^", "(", ")", "=", "?"]
+ONE_CHAR_TOKENS = ["+", "-", "*", "/", "%", "^", "(", ")", "=", "?", "[", "]", ",", ";"]
 
 
 class Tokenizer:
@@ -39,8 +39,6 @@ class Tokenizer:
             elif char in ONE_CHAR_TOKENS:
                 char_idx += 1
                 token = char
-            elif char == "[":
-                char_idx, token = self._parse_matrix(string, char_idx)
             else:
                 raise UnknownToken(char)
             tokens.append(token)
@@ -52,23 +50,6 @@ class Tokenizer:
         start_idx = char_idx
         while char_idx < len(string) and (string[char_idx].isdigit() or string[char_idx] == '.'):
             char_idx += 1
-        return char_idx, string[start_idx:char_idx]
-
-    @staticmethod
-    def _parse_matrix(string, char_idx):
-        depth = 1
-        start_idx = char_idx
-        char_idx += 1
-
-        while char_idx < len(string) and depth != 0:
-            char = string[char_idx]
-            if char == '[':
-                depth += 1
-            elif char == ']':
-                depth -= 1
-                char_idx += 1
-            if depth != 0:
-                raise UnknownToken(string[start_idx:])
         return char_idx, string[start_idx:char_idx]
 
     @staticmethod
