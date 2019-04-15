@@ -1,6 +1,9 @@
 """Parser class implementation"""
 
 from math_types import Operator, Number, ComplexNumber, Matrix, Function, Variable
+from exceptions.parsing_exceptions import (BracketsMismatch, NoClosingBracket,
+                                           UnknownToken, BadNumber, MatrixDiffElems,
+                                           UnexpectedToken, EmptyMatrix)
 
 
 OPERATOR_TOKENS = ["+", "-", "*", "/", "%", "^", "=", "**", "?", "(", ")", "[", "]", ",", ";"]
@@ -33,9 +36,9 @@ class Parser:
                 closing_bracket = brackets.pop()
                 if ((token == "(" and closing_bracket != ")") or
                         (token == "[" and closing_bracket != "]")):
-                    raise Exception("Brackets doesn't match")
+                    raise BracketsMismatch(token, closing_bracket)
         if brackets:
-            raise Exception("No closing brackets")
+            raise NoClosingBracket(brackets[0])
         return True
 
     def _parse_individual_tokens(self, tokens):
@@ -55,13 +58,13 @@ class Parser:
             return Number(int(token))
         if "." in token:
             if token.count(".") > 1:
-                raise Exception("Bad number")
+                raise BadNumber(token)
             return Number(float(token))
         if token == "i":
             return ComplexNumber(0, 1)
         if token.isalpha():
             return Variable(token)
-        raise Exception("WTF? {}".format(token))
+        raise UnknownToken(token)
 
     @staticmethod
     def _parse_functions(objs):
@@ -126,7 +129,7 @@ class Parser:
         for obj in objs:
             if isinstance(obj, Operator):
                 if obj.op not in exp:
-                    raise Exception("Unexpected shit here: " + obj.op)
+                    raise UnexpectedToken(obj)
                 if obj.op == "[":
                     exp = "object"
                     cur_row = []
@@ -142,12 +145,12 @@ class Parser:
                         matrix.cols = len(cur_row)
                     else:
                         if matrix.cols != len(cur_row):
-                            raise Exception("Matrix has different number of elems in rows")
+                            raise MatrixDiffElems
             elif exp == "object" and isinstance(obj, (Number, ComplexNumber, Variable)):
                 cur_row.append(obj)
                 exp = (",", "]")
             else:
-                raise Exception("Unexpected shit in matrix: " + str(obj))
+                raise UnexpectedToken(obj)
         if matrix.rows == 0:
-            raise Exception("Empty matrix")
+            raise EmptyMatrix()
         return matrix

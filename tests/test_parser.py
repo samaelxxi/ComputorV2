@@ -1,6 +1,8 @@
 from parsing.parser import Parser
 from math_types import *
+from exceptions.parsing_exceptions import *
 import pytest
+
 
 p = Parser()
 
@@ -99,59 +101,59 @@ def test11():
 
 def test12():
     inp = ("[", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(EmptyMatrix) as e:
         res = p.parse(inp)
 
 
 def test13():
     inp = ("[")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(NoClosingBracket) as e:
         res = p.parse(inp)
 
 
 def test14():
     inp = ("[", "[", "]", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
 
 
 def test15():
     inp = ("[", "0", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
 
 
 def test16():
     inp = ("[", "[", "0", "1", "]", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
 
 
 def test17():
     inp = ("[", "[", "0", ",", "1", "]", "[", "13.5", "]", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
 
 
 def test18():
     inp = ("[", "[", "0", ",", "1", "]", ";", "[", "13.5", "]", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(MatrixDiffElems) as e:
         res = p.parse(inp)
 
 
 def test19():
-    inp = ("[", "[", "0", ",", "1", "]", "[", "13.5", "]", "]")
-    with pytest.raises(Exception) as e:
+    inp = ("[", "[", "0", ";", "1", "]", "[", "13.5", "]", "]")
+    with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
 
 
 def test20():
     inp = ("[", "[", "0", ",", "1", "]", "[", "13.5", ",", "]", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
 
 
 def test21():
     inp = ("[", "[", "0", ",", "1", "]", ",", "[", "13.5", ",", "]", "]")
-    with pytest.raises(Exception) as e:
+    with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
