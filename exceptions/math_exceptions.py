@@ -1,4 +1,4 @@
-"""Module for math and expression evaluations errors"""
+"""Module for math errors"""
 
 
 class MathException(Exception):
