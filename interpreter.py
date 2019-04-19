@@ -30,6 +30,7 @@ class Interpreter:
         while True:
             try:
                 input_string = input(">")
+                if not input_string: continue
                 output_string = self.eval(input_string)
                 print(output_string)
             except (ParsingError, EvalException, MathException, TokenizationError) as e:
@@ -37,6 +38,15 @@ class Interpreter:
             except (EOFError, KeyboardInterrupt):
                 print()
                 break
+
+    def read_eval_file(self, filename):
+        file = open(filename, "r")
+        for line in file:
+            try:
+                output_string = self.eval(line)
+                print(output_string)
+            except (ParsingError, EvalException, MathException, TokenizationError) as e:
+                print("ERROR: ", str(e))
 
     def eval(self, string):
         tokens = self.tokenizer.tokenize(string)
