@@ -28,6 +28,10 @@ class NoClosingBracket(ParsingError):
         message = "No closing bracket for {}".format(bracket)
         super(NoClosingBracket, self).__init__(message)
 
+class ExtraBracket(ParsingError):
+    def __init__(self, bracket):
+        message = "Extra bracket: {}".format(bracket)
+        super(ExtraBracket, self).__init__(message)
 
 class BadNumber(ParsingError):
     def __init__(self, token):

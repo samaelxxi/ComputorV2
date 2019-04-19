@@ -8,3 +8,6 @@ from math_types.matrix import Matrix
 from math_types.number import Number
 from math_types.variable import Variable
 from math_types.operator import Operator
+
+
+MATH_TYPES = [Number, ComplexNumber, Matrix, Variable, Function]

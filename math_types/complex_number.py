@@ -56,6 +56,11 @@ class ComplexNumber:
         except AttributeError:
             raise OperationIsNotSupported(ComplexNumber, "*", type(other))
 
+    def __str__(self):
+        return "{} {} {}i".format(self.real, "+" if self.imag > 0 else "-", abs(self.imag))
+
+    __repr__ = __str__
+
     def add_to_num(self, other):
         return ComplexNumber(self.real + other.val, self.imag)
 

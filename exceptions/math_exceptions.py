@@ -7,7 +7,7 @@ class MathException(Exception):
 
 class OperationIsNotSupported(MathException):
     def __init__(self, type1, op, type2):
-        message = "Operation {} between {} and {} is not supported".format(type1, op, type2)
+        message = "Operation {} between {} and {} is not supported".format(op, type1.__name__, type2.__name__)
         super(OperationIsNotSupported, self).__init__(message)
 
 

@@ -3,7 +3,7 @@
 from math_types import Operator, Number, ComplexNumber, Matrix, Function, Variable
 from exceptions.parsing_exceptions import (BracketsMismatch, NoClosingBracket,
                                            UnknownToken, BadNumber, MatrixDiffElems,
-                                           UnexpectedToken, EmptyMatrix)
+                                           UnexpectedToken, EmptyMatrix, ExtraBracket)
 
 
 OPERATOR_TOKENS = ["+", "-", "*", "/", "%", "^", "=", "**", "?", "(", ")", "[", "]", ",", ";"]
@@ -33,6 +33,8 @@ class Parser:
             if token in "([":
                 brackets.append(token)
             elif token in ")]":
+                if not brackets:
+                    raise ExtraBracket(token)
                 closing_bracket = brackets.pop()
                 if ((token == "(" and closing_bracket != ")") or
                         (token == "[" and closing_bracket != "]")):

@@ -19,4 +19,7 @@ class Variable:
     def __str__(self):
         return "var " + self.name
 
+    def assign(self, value):
+        self.val = value
+
     __repr__ = __str__

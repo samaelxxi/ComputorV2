@@ -30,7 +30,7 @@ class Matrix:
         for row in self.matrix:
             str_row = "[ " + ", ".join(str(elem) for elem in row) + " ]"
             rows.append(str_row)
-        return "/n".join(rows)
+        return "\n".join(rows)
 
     def __add__(self, other):
         try:

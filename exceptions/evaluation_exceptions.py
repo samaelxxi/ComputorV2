@@ -11,10 +11,10 @@ class TooManyAssignments(EvalException):
         super(TooManyAssignments, self).__init__(message)
 
 
-class VariableNotExists(EvalException):
+class VariableNotDefined(EvalException):
     def __init__(self, name):
-        message = "Variable {} doesn't exists".format(name)
-        super(VariableNotExists, self).__init__(message)
+        message = "Variable {} isn't defined".format(name)
+        super(VariableNotDefined, self).__init__(message)
 
 
 class FunctionNotExists(EvalException):
@@ -29,7 +29,13 @@ class NoExpectedOperand(EvalException):
         super(NoExpectedOperand, self).__init__(message)
 
 
-class WrongAssingmentLeftOperand(EvalException):
+class WrongAssingmentLeftPart(EvalException):
     def __init__(self, left):
-        message = "Can't assign to {}".format(type(left))
-        super(WrongAssingmentLeftOperand, self).__init__(message)
+        message = "Can't assign to {}".format(type(left).__name__)
+        super(WrongAssingmentLeftPart, self).__init__(message)
+
+
+class ExpressionIsNotValid(EvalException):
+    def __init__(self, expr):
+        message = "Expression is not valid: " + " ".join(str(obj) for obj in expr)
+        super(ExpressionIsNotValid, self).__init__(message)

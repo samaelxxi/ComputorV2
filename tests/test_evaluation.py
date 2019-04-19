@@ -3,6 +3,8 @@ from math_types import *
 import pytest
 from exceptions.evaluation_exceptions import *
 from exceptions.parsing_exceptions import UnexpectedToken
+from exceptions.math_exceptions import OperationIsNotSupported
+from math import isclose
 
 # basic print tests
 def test1():
@@ -66,7 +68,7 @@ def test8():
     i = Interpreter()
     inp_str = "6 + 4.22i"
     out_str = i.eval(inp_str)
-    assert out_str == "6 + 4.22i"
+    assert out_str == "6.0 + 4.22i"
 
 
 def test9():
@@ -87,7 +89,7 @@ def test11_5():
     i = Interpreter()
     inp_str = "5 - -2 + 1"
     out_str = i.eval(inp_str)
-    assert out_str == "7"
+    assert out_str == "8"
 
 
 # brackets tests
@@ -109,7 +111,7 @@ def test13():
     i = Interpreter()
     inp_str = "((5 / 2) - 7) * 3.1 + (5.7 - 2)^3 - (18/2/2*3.2 - 2*(3+   1))"
     out_str = i.eval(inp_str)
-    assert out_str == "30.303"
+    assert isclose(float(out_str), float("30.303"))
 
 
 # variables tests
@@ -119,7 +121,7 @@ def test14():
     out_str = i.eval(inp_str)
     assert out_str == "25"
     assert "vara" in i.variables
-    assert i.variables["vara"] == Number(25)
+    assert i.variables["vara"].val == Number(25)
 
 
 def test15():
@@ -130,7 +132,7 @@ def test15():
     out_str = i.eval(inp_str)
     assert out_str == "12"
     assert "varb" in i.variables
-    assert i.variables["varb"] == Number(12)
+    assert i.variables["varb"].val == Number(12)
 
 
 def test16():
@@ -139,7 +141,7 @@ def test16():
     out_str = i.eval(inp_str)
     assert out_str == "-4.3"
     assert "vara" in i.variables
-    assert i.variables["vara"] == Number(-4.3)
+    assert i.variables["vara"].val == Number(-4.3)
 
 
 def test17():
@@ -148,7 +150,7 @@ def test17():
     out_str = i.eval(inp_str)
     assert out_str == "3 + 2i"
     assert "vara" in i.variables
-    assert i.variables["vara"] == ComplexNumber(3, 2)
+    assert i.variables["vara"].val == ComplexNumber(3, 2)
 
 
 def test18():
@@ -157,7 +159,7 @@ def test18():
     out_str = i.eval(inp_str)
     assert out_str == "-4 - 4i"
     assert "varb" in i.variables
-    assert i.variables["varb"] == ComplexNumber(-4, -4)
+    assert i.variables["varb"].val == ComplexNumber(-4, -4)
 
 
 def test19():
@@ -166,25 +168,25 @@ def test19():
     out_str = i.eval(inp_str)
     assert out_str == "2"
     assert "x" in i.variables
-    assert i.variables["x"] == Number(2)
+    assert i.variables["x"].val == Number(2)
 
     inp_str = "y=x"
     out_str = i.eval(inp_str)
     assert out_str == "2"
     assert "y" in i.variables
-    assert i.variables["y"] == Number(2)
+    assert i.variables["y"].val == Number(2)
 
     inp_str = "y=7"
     out_str = i.eval(inp_str)
     assert out_str == "7"
     assert "y" in i.variables
-    assert i.variables["y"] == Number(7)
+    assert i.variables["y"].val == Number(7)
 
     inp_str = "y = 2 * i - 4"
     out_str = i.eval(inp_str)
     assert out_str == "-4 + 2i"
     assert "y" in i.variables
-    assert i.variables["y"] == ComplexNumber(-4, 2)
+    assert i.variables["y"].val == ComplexNumber(-4, 2)
 
 
 def test20():
@@ -192,17 +194,17 @@ def test20():
     inp_str = "varA = 2 + 4 *2 - 5 %4 + 2 * (4 + 5)"
     out_str = i.eval(inp_str)
     assert "vara" in i.variables
-    assert i.variables["vara"] == Number(27)
+    assert i.variables["vara"].val == Number(27)
 
     inp_str = "varB = 2 * varA - 5 %4"
     out_str = i.eval(inp_str)
     assert "varb" in i.variables
-    assert i.variables["varb"] == Number(53)
+    assert i.variables["varb"].val == Number(53)
 
     inp_str = "varC = 2 * varA - varB"
     out_str = i.eval(inp_str)
     assert "varc" in i.variables
-    assert i.variables["varc"] == Number(1)
+    assert i.variables["varc"].val == Number(1)
 
 
 def test21():
@@ -217,7 +219,7 @@ def test21():
     out_str2 = i.eval("a + b = ?")
     out_str3 = i.eval("c = a + b")
 
-    assert out_str1 == out_str2 and out_str2 == out_str3 and i.variables["c"] == ComplexNumber(13, 4)
+    assert out_str1 == out_str2 and out_str2 == out_str3 and i.variables["c"].val == ComplexNumber(13, 4)
 
 
 def test22():
@@ -229,7 +231,7 @@ def test22():
     out_str2 = i.eval("a + b = ?")
     out_str3 = i.eval("c = a + b")
 
-    assert out_str1 == out_str2 and out_str2 == out_str3 and i.variables["c"] == Matrix(2, 2, [[3, 4],[ 5, 7.5]])
+    assert out_str1 == out_str2 and out_str2 == out_str3 and i.variables["c"].val == Matrix(2, 2, [[3, 4],[ 5, 7.5]])
 
 # functions
 def test23():
@@ -300,18 +302,17 @@ def test32():
 
 def test33():
     i = Interpreter()
-    with pytest.raises(VariableNotExists):
+    with pytest.raises(VariableNotDefined):
         i.eval("x = c")
 
 def test33_5():
     i = Interpreter()
-    with pytest.raises(VariableNotExists):
+    with pytest.raises(VariableNotDefined):
         i.eval("x")
-
 
 def test33_6():
     i = Interpreter()
-    with pytest.raises(VariableNotExists):
+    with pytest.raises(VariableNotDefined):
         i.eval("x = ?")
 
 def test34():
@@ -333,7 +334,7 @@ def test36():
 
 def test37():
     i = Interpreter()
-    with pytest.raises(UnexpectedToken):
+    with pytest.raises(OperationIsNotSupported):
         i.eval("x = 2 - - - 2")
 
 def test38():
@@ -343,7 +344,7 @@ def test38():
 
 def test39():
     i = Interpreter()
-    with pytest.raises(NoExpectedOperand):
+    with pytest.raises(WrongAssingmentLeftPart):
         i.eval("/ x = 2")
 
 def test40():
@@ -358,15 +359,25 @@ def test41():
 
 def test42():
     i = Interpreter()
-    with pytest.raises(WrongAssingmentLeftOperand):
+    with pytest.raises(WrongAssingmentLeftPart):
         i.eval("2 = 3 + 4")
 
 def test43():
     i = Interpreter()
-    with pytest.raises(WrongAssingmentLeftOperand):
+    with pytest.raises(WrongAssingmentLeftPart):
         i.eval("x + 5 = 3")
 
 def test44():
     i = Interpreter()
-    with pytest.raises(WrongAssingmentLeftOperand):
+    with pytest.raises(WrongAssingmentLeftPart):
         i.eval("45 -2i + k = 3 + 4 - 4124")
+
+def test45():
+    i = Interpreter()
+    with pytest.raises(WrongAssingmentLeftPart):
+        i.eval("func(5) = 3")
+
+def test46():
+    i = Interpreter()
+    with pytest.raises(Exception):
+        i.eval("-")
