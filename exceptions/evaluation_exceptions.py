@@ -27,3 +27,9 @@ class NoExpectedOperand(EvalException):
     def __init__(self, name):
         message = "No operand for operation {} ".format(name)
         super(NoExpectedOperand, self).__init__(message)
+
+
+class WrongAssingmentLeftOperand(EvalException):
+    def __init__(self, left):
+        message = "Can't assign to {}".format(type(left))
+        super(WrongAssingmentLeftOperand, self).__init__(message)

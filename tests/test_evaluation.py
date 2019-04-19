@@ -355,3 +355,18 @@ def test41():
     i = Interpreter()
     with pytest.raises(NoExpectedOperand):
         i.eval("+2")
+
+def test42():
+    i = Interpreter()
+    with pytest.raises(WrongAssingmentLeftOperand):
+        i.eval("2 = 3 + 4")
+
+def test43():
+    i = Interpreter()
+    with pytest.raises(WrongAssingmentLeftOperand):
+        i.eval("x + 5 = 3")
+
+def test44():
+    i = Interpreter()
+    with pytest.raises(WrongAssingmentLeftOperand):
+        i.eval("45 -2i + k = 3 + 4 - 4124")

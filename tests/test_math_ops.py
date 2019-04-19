@@ -352,12 +352,16 @@ def test79():
 
 
 def test80():
-    assert M1 ** M1 == Matrix(2, 2, [[Number(7), Number(10)], [Number(15), Number(22)]])
+    assert M1 ** M1 == Matrix(2, 2, [[Number(7.44), Number(10.4)], [Number(15.6), Number(22)]])
 
 
 def test81():
-    assert rowM ** colM == Matrix(2, 2, [[Number(7), Number(10)], [Number(15), Number(22)]])
+    assert rowM ** colM == Matrix(1, 1, [[Number(14)]])
 
+
+def test83():
+    with pytest.raises(WrongMatrixDimension):
+        M1 ** colM
 
 def test82():
     with pytest.raises(OperationIsNotSupported):

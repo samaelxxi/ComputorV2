@@ -22,7 +22,7 @@ class ComplexNumber:
 
     def __add__(self, other):
         try:
-            return other.sum_with_comp_num(self)
+            return other.add_to_comp_num(self)
         except AttributeError:
             raise OperationIsNotSupported(ComplexNumber, "+", type(other))
 
@@ -56,7 +56,7 @@ class ComplexNumber:
         except AttributeError:
             raise OperationIsNotSupported(ComplexNumber, "*", type(other))
 
-    def sum_with_num(self, other):
+    def add_to_num(self, other):
         return ComplexNumber(self.real + other.val, self.imag)
 
     def subtract_from_num(self, other):
@@ -68,7 +68,7 @@ class ComplexNumber:
     def divide_num(self, other):
         return ComplexNumber(other.val, 0) / self
 
-    def sum_with_comp_num(self, other):
+    def add_to_comp_num(self, other):
         return ComplexNumber(self.real + other.real, self.imag + other.imag)
 
     def subtract_from_comp_num(self, other):
