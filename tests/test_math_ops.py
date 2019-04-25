@@ -227,19 +227,9 @@ def test53():
     assert M1 / Number(2) == Matrix(2, 2, [[Number(0.6), Number(1)], [Number(1.5), Number(2)]])
 
 
-def test54():
-    with pytest.raises(OperationIsNotSupported):
-        Number(2) + M1
-
-
 def test55():
     with pytest.raises(OperationIsNotSupported):
         Number(2) - M1
-
-
-def test56():
-    with pytest.raises(OperationIsNotSupported):
-        Number(2) * M1
 
 
 def test57():
@@ -363,6 +353,30 @@ def test83():
     with pytest.raises(WrongMatrixDimension):
         M1 ** colM
 
+
 def test82():
     with pytest.raises(OperationIsNotSupported):
         M1 ^ M1
+
+
+def test84():
+    with pytest.raises(ZeroDivisionError):
+        Number(2) / Number(0)
+
+
+def test85():
+    with pytest.raises(ZeroDivisionError):
+        ComplexNumber(2, 1) / ComplexNumber(0, 0)
+
+
+def test86():
+    with pytest.raises(ZeroDivisionError):
+        Matrix(1, 2, [[Number(2), Number(3)]]) / Matrix(1, 2, [[Number(5), Number(0)]])
+
+
+
+
+
+
+
+

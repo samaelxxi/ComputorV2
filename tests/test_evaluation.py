@@ -231,15 +231,16 @@ def test22():
     out_str2 = i.eval("a + b = ?")
     out_str3 = i.eval("c = a + b")
 
-    assert out_str1 == out_str2 and out_str2 == out_str3 and i.variables["c"].val == Matrix(2, 2, [[3, 4],[ 5, 7.5]])
+    assert out_str1 == out_str2 and out_str2 == out_str3
+    assert i.variables["c"].val == Matrix(2, 2, [[Number(3), Number(4)],[ Number(5), Number(7.5)]])
 
 # functions
 def test23():
     i = Interpreter()
     inp_str = " funA(x) = 2*x^5 + 4x^2 - 5*x + 4"
     out_str = i.eval(inp_str)
-    assert out_str == "2 * x^5 + 4 * x^2 - 5*x + 4"
-    assert "funa" in i.functions and i.functions["funa"].name == "x"
+    assert out_str == "2 * x ^ 5 + 4 * x ^ 2 - 5 * x + 4"
+    assert "funa" in i.functions and i.functions["funa"].input.name == "x"
 
 
 def test24():
@@ -247,7 +248,7 @@ def test24():
     out_str = i.eval("varA = 2 + 4 *2 - 5 %4 + 2 * (4 + 5)")
     out_str = i.eval(" varB = 2 * varA - 5 %4")
     out_str = i.eval("funA(x) = varA + varB * 4 - 1 / 2 + x")
-    assert out_str == "238.5 + x"
+    assert out_str == "27 + 53 * 4 - 1 / 2 + x"
     i.eval("varC = 2 * varA - varB")
     out_str = i.eval("varD = funA(varC)")
     assert out_str == "239.5"
@@ -267,6 +268,16 @@ def test26():
     i.eval("k(x) = f(x) + g(x) - p")
 
     assert i.eval("k(2)") == "4"
+
+def test26_1():
+    i = Interpreter()
+    i.eval("f(x) = 2")
+    i.eval("g(x) = 3x - 1")
+    i.eval("p = 3")
+    i.eval("k(x) = f(x+1) + g(x*2 - 3) - p")
+
+    assert i.eval("k(2)") == "4"
+
 
 
 # exceptions tests
@@ -377,7 +388,24 @@ def test45():
     with pytest.raises(WrongAssingmentLeftPart):
         i.eval("func(5) = 3")
 
+def test47():
+    i = Interpreter()
+    with pytest.raises(WrongAssingmentLeftPart):
+        i.eval("func(x + 2) = 3")
+
 def test46():
     i = Interpreter()
     with pytest.raises(Exception):
         i.eval("-")
+
+def test49():
+    i = Interpreter()
+    with pytest.raises(WrongAssingmentLeftPart):
+        i.eval("func(5 = 3)")
+
+
+
+def test50():
+    i = Interpreter()
+    i.eval("x = [[2, 3]] - [[2, 3]]")
+    assert(i.variables["x"] == Matrix(1, 2, [[Number(0), Number(0)]]))

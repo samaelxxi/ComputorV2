@@ -74,6 +74,20 @@ class Matrix:
         except AttributeError:
             raise OperationIsNotSupported(Matrix, "**", type(other))
 
+    def add_to_num(self, other):
+        res = Matrix(self.rows, self.cols, [row[:] for row in self.matrix])
+        for row_idx in range(self.rows):
+            for col_idx in range(self.cols):
+                res.matrix[row_idx][col_idx] += other
+        return res
+
+    def multiply_by_num(self, other):
+        res = Matrix(self.rows, self.cols, [row[:] for row in self.matrix])
+        for row_idx in range(self.rows):
+            for col_idx in range(self.cols):
+                res.matrix[row_idx][col_idx] *= other
+        return res
+
     def add_to_matrix(self, other):
         if self.rows != other.rows or self.cols != other.cols:
             raise WrongMatrixDimension(other, self)

@@ -20,3 +20,11 @@ class Function:
 
     def __eq__(self, other):
         return self.name == other.name and self.input == other.input
+
+    def __str__(self):
+        if self.body is not None:
+            return " ".join(str(obj) for obj in self.body)
+        else:
+            return "{}({})".format(self.name, self.input)
+
+    __repr__ = __str__

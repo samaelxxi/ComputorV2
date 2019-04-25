@@ -5,8 +5,10 @@ from math_types import Operator, Number, ComplexNumber, Matrix, Function, Variab
 from exceptions import MathException, ParsingError, EvalException, TokenizationError
 from exceptions.parsing_exceptions import UnexpectedToken
 from exceptions.evaluation_exceptions import (TooManyAssignments, WrongAssingmentLeftPart,
-                                              NoExpectedOperand, ExpressionIsNotValid, VariableNotDefined)
+                                              NoExpectedOperand, ExpressionIsNotValid,
+                                              VariableNotDefined, FunctionNotExists)
 import operator
+from copy import deepcopy
 
 
 OPERATOR_PRECEDENCE = {"+": 0, "-": 0, "%": 1, "*": 2, "/": 2, "^": 3, "**": 2}
@@ -61,6 +63,7 @@ class Interpreter:
         elif op_type == "evaluation":
             eval_res = self._evaluate_expression(parts[0])
         elif op_type == "equation":
+            raise Exception("Not implemented!")
             eval_res = None
             pass
         else:
@@ -72,18 +75,26 @@ class Interpreter:
         if len(expr_parts[0]) != 1:
             raise WrongAssingmentLeftPart(expr_parts)
         left_part = expr_parts[0][0]
-        right_part = self._evaluate_expression(expr_parts[1])
-        try:
-            left_part.assign(right_part)
-        except AttributeError:
-            raise WrongAssingmentLeftPart(expr_parts[0][0])
+        right_part = expr_parts[1]
 
         if isinstance(left_part, Variable):
+            right_part_evaluated = self._evaluate_expression(right_part)
+            left_part.val = right_part_evaluated
             self.variables[left_part.name] = left_part
-        elif isinstance(left_part, Function):
-            self.functions[left_part.name] = left_part
+            output = right_part_evaluated
 
-        return right_part
+        elif isinstance(left_part, Function):
+            if not isinstance(left_part.input, Variable):
+                raise WrongAssingmentLeftPart(left_part)
+            self._replace_variables(right_part, exceptions=[left_part.input])
+            left_part.body = right_part
+            self.functions[left_part.name] = left_part
+            output = str(left_part)
+
+        else:
+            raise WrongAssingmentLeftPart(left_part)
+
+        return output
 
     def _evaluate_expression(self, expr):
         """
@@ -92,7 +103,14 @@ class Interpreter:
         :param expr: list with operators and operands
         :return: result of expression evaluation, one of math primitive types
         """
+        if (len(expr) == 1 and isinstance(expr[0], Function) and  # stupid shit for correction stupid test
+                expr[0].name in self.functions and isinstance(expr[0].input, Variable)
+                and not any(var == expr[0].input for var in self.variables.values())
+                and expr[0].input == self.functions[expr[0].name].input):
+            return str(self.functions[expr[0].name])
+
         self._replace_variables(expr)
+        self._replace_functions(expr)
         while True:
             idx1, idx2 = self._get_deepest_brackets(expr)
             if idx1 is None:
@@ -103,7 +121,26 @@ class Interpreter:
             expr = expr[:idx1] + [res] + expr[idx2+1:]
         return res
 
-    def _replace_variables(self, expr):
+    def _replace_functions(self, expr):
+        for i, obj in enumerate(expr):
+            if isinstance(obj, Function):
+                func_name = obj.name
+                if func_name not in self.functions:
+                    raise FunctionNotExists(func_name)
+
+                defined_func = self.functions[func_name]
+                func_var_name = defined_func.input.name
+                func_var_val = self._evaluate_expression([obj.input])
+                func_body = defined_func.body[:]
+
+                temp_interpreter = Interpreter()
+                temp_interpreter.variables[func_var_name] = Variable(func_var_name, func_var_val)
+                res = temp_interpreter._evaluate_expression(func_body)
+
+                expr[i] = res
+
+
+    def _replace_variables(self, expr, exceptions=None):
         """
         Takes expression and replaces all variables by it's values or throws error if it's not defined
 
@@ -111,13 +148,21 @@ class Interpreter:
         """
         for i, obj in enumerate(expr):
             if isinstance(obj, Variable):
+                if exceptions:
+                    skip = False
+                    for var in exceptions:
+                        if var == obj:
+                            skip = True
+                            break
+                    if skip: continue
+
                 var_name = obj.name
                 if var_name not in self.variables:
                     raise VariableNotDefined(var_name)
                 expr[i] = self.variables[var_name].val
 
-
-    def _get_deepest_brackets(self, expr):
+    @staticmethod
+    def _get_deepest_brackets(expr):
         """
         Searches for deepest pair of brackets in expression
 

@@ -57,4 +57,4 @@ class Tokenizer:
         start_idx = char_idx
         while char_idx < len(string) and string[char_idx].isalpha():
             char_idx += 1
-        return char_idx, string[start_idx:char_idx]
+        return char_idx, string[start_idx:char_idx].lower()

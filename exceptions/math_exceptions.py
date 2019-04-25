@@ -16,3 +16,9 @@ class WrongMatrixDimension(MathException):
         message = "Matrix with dimension {}x{} doesn't match matrix with dimension {}x{}".format(m1.rows, m1.cols,
                                                                                                  m2.rows, m2.cols)
         super(WrongMatrixDimension, self).__init__(message)
+
+
+class ZeroDivisionError(MathException):
+    def __init__(self, left, right):
+        message = "Trying to divide by zero: {} / {}".format(left, right)
+        super(ZeroDivisionError, self).__init__(message)

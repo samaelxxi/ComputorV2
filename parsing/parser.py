@@ -98,7 +98,7 @@ class Parser:
             if idx1 is None:
                 break
             else:
-                matrix = self._parse_matrix(objs[idx1:idx2])
+                matrix = self._parse_matrix(new_objs[idx1:idx2])
                 new_objs = new_objs[:idx1] + [matrix] + new_objs[idx2:]
         return new_objs
 

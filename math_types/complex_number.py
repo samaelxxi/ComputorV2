@@ -1,7 +1,7 @@
 """Complex number class implementation"""
 
 from math import isclose
-from exceptions.math_exceptions import OperationIsNotSupported
+from exceptions.math_exceptions import OperationIsNotSupported, ZeroDivisionError
 
 
 class ComplexNumber:
@@ -86,6 +86,8 @@ class ComplexNumber:
 
     def divide_comp_num(self, other):
         denom = self.real ** 2 + self.imag ** 2
+        if isclose(denom, 0):
+            raise ZeroDivisionError(other, self)
         real = (self.real * other.real + self.imag * other.imag) / denom
         imag = (self.real * other.imag - self.imag * other.real) / denom
         return ComplexNumber(real, imag)

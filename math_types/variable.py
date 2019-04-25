@@ -17,7 +17,10 @@ class Variable:
         return self.name == other.name
 
     def __str__(self):
-        return "var " + self.name
+        return self.name
+
+    def __hash__(self):
+        return hash(self.name)
 
     def assign(self, value):
         self.val = value

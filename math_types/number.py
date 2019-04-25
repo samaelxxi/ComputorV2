@@ -1,7 +1,7 @@
 """Number class implementation"""
 
 from math import isclose
-from exceptions.math_exceptions import OperationIsNotSupported
+from exceptions.math_exceptions import OperationIsNotSupported, ZeroDivisionError
 from math_types import ComplexNumber, Matrix
 
 
@@ -65,6 +65,8 @@ class Number:
         return Number(self.val * other.val)
 
     def divide_num(self, other):
+        if isclose(self.val, 0):
+            raise ZeroDivisionError(other, self)
         return Number(other.val / self.val)
 
     def power_num(self, other):
@@ -83,6 +85,8 @@ class Number:
         return ComplexNumber(self.val * other.real, self.val * other.imag)
 
     def divide_comp_num(self, other):
+        if isclose(self.val, 0):
+            raise ZeroDivisionError(other, self)
         return ComplexNumber(other.real / self.val, other.imag / self.val)
 
     def power_comp_num(self, other):
@@ -115,6 +119,8 @@ class Number:
         return res
 
     def divide_matrix(self, other):
+        if isclose(self.val, 0):
+            raise ZeroDivisionError(other, self)
         res = Matrix(other.rows, other.cols, [row[:] for row in other.matrix])
         for row_idx in range(other.rows):
             for col_idx in range(other.cols):

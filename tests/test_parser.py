@@ -157,3 +157,8 @@ def test21():
     inp = ("[", "[", "0", ",", "1", "]", ",", "[", "13.5", ",", "]", "]")
     with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
+
+def test22():
+    inp = ("fun", "(", "2", "+", "3", ")")
+    with pytest.raises(UnexpectedToken) as e:
+        res = p.parse(inp)
