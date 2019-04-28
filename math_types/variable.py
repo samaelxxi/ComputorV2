@@ -1,11 +1,13 @@
 """Variable class implementation"""
+from math_types import AbstractMathType
+from typing import Optional
 
 
-class Variable:
+class Variable(AbstractMathType):
     """
     Variable class
     """
-    def __init__(self, name, val=None):
+    def __init__(self, name: str, val=Optional[AbstractMathType]):
         """
         :param name: name of variable(would be lowercased)
         :param val: variable value(None by default)
@@ -21,8 +23,5 @@ class Variable:
 
     def __hash__(self):
         return hash(self.name)
-
-    def assign(self, value):
-        self.val = value
 
     __repr__ = __str__

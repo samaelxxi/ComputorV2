@@ -1,7 +1,8 @@
 """Function class implementation"""
+from math_types import AbstractMathType
 
 
-class Function:
+class Function(AbstractMathType):
     """
     Function class could be used to store function calls or functions as whole
     If function represents only function call, it's body is None
@@ -23,7 +24,7 @@ class Function:
 
     def __str__(self):
         if self.body is not None:
-            return " ".join(str(obj) for obj in self.body)
+            return str(self.body)
         else:
             return "{}({})".format(self.name, self.input)
 

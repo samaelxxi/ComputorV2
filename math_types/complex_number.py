@@ -2,14 +2,23 @@
 
 from math import isclose
 from exceptions.math_exceptions import OperationIsNotSupported, ZeroDivisionError
+from math_types import MathPrimitive
 
 
-class ComplexNumber:
+class ComplexNumber(MathPrimitive):
     """
     Implementation of complex number and it's operations
     ComplexNumber may interact with other ComplexNumber or Number
     """
-    def __init__(self, real, imag):
+    operations = {"+": "add_to_comp_num",
+                  "-": "subtract_from_comp_num",
+                  "*": "multiply_by_comp_num",
+                  "/": "divide_comp_num",
+                  "^": "power_comp_num",
+                  "%": "modulo_comp_num",
+                  "**": "matmul_comp_num"}
+
+    def __init__(self, real: float, imag: float):
         """
         :param real: number for real part
         :param imag: number for imaginary part of number
@@ -19,42 +28,6 @@ class ComplexNumber:
 
     def __eq__(self, other):
         return isclose(self.real, other.real) and isclose(self.imag, other.imag)
-
-    def __add__(self, other):
-        try:
-            return other.add_to_comp_num(self)
-        except AttributeError:
-            raise OperationIsNotSupported(ComplexNumber, "+", type(other))
-
-    def __sub__(self, other):
-        try:
-            return other.subtract_from_comp_num(self)
-        except AttributeError:
-            raise OperationIsNotSupported(ComplexNumber, "-", type(other))
-
-    def __mul__(self, other):
-        try:
-            return other.multiply_by_comp_num(self)
-        except AttributeError:
-            raise OperationIsNotSupported(ComplexNumber, "*", type(other))
-
-    def __truediv__(self, other):
-        try:
-            return other.divide_comp_num(self)
-        except AttributeError:
-            raise OperationIsNotSupported(ComplexNumber, "*", type(other))
-
-    def __xor__(self, other):
-        try:
-            return other.power_comp_num(self)
-        except AttributeError:
-            raise OperationIsNotSupported(ComplexNumber, "*", type(other))
-
-    def __mod__(self, other):
-        try:
-            return other.modulo_comp_num(self)
-        except AttributeError:
-            raise OperationIsNotSupported(ComplexNumber, "*", type(other))
 
     def __str__(self):
         return "{} {} {}i".format(self.real, "+" if self.imag > 0 else "-", abs(self.imag))

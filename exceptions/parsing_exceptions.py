@@ -55,3 +55,9 @@ class UnexpectedToken(ParsingError):
     def __init__(self, token):
         message = "Unexpected token: {}".format(str(token))
         super(UnexpectedToken, self).__init__(message)
+
+
+class EmptyFunctionInput(ParsingError):
+    def __init__(self):
+        message = "No input to function!"
+        super(EmptyFunctionInput, self).__init__(message)
