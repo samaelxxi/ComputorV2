@@ -1,5 +1,5 @@
 """Matrix class implementation"""
-from exceptions.math_exceptions import OperationIsNotSupported, WrongMatrixDimension
+from exceptions.math_exceptions import WrongMatrixDimension
 from math_types import MathPrimitive
 import operator
 
@@ -9,7 +9,7 @@ class Matrix(MathPrimitive):
     Matrix class represents math object matrix and implements it's default behavior
         such as addition, subtraction, multiplication...
     """
-    operations = {"+": "add_to_matrix",
+    _operations = {"+": "add_to_matrix",
                   "-": "subtract_from_matrix",
                   "*": "multiply_by_matrix",
                   "/": "divide_matrix",
@@ -59,7 +59,10 @@ class Matrix(MathPrimitive):
                 res.matrix[row_idx][col_idx] *= other
         return res
 
-    def matrix_elementwise_op(self, other, op):
+    add_to_comp_num = add_to_num
+    multiply_by_comp_num = multiply_by_num
+
+    def matrix_op_matrix_elementwise(self, other, op):
         if self.rows != other.rows or self.cols != other.cols:
             raise WrongMatrixDimension(other, self)
         res = Matrix(other.rows, other.cols, [row[:] for row in other.matrix])
@@ -69,19 +72,19 @@ class Matrix(MathPrimitive):
         return res
 
     def add_to_matrix(self, other):
-        return self.matrix_elementwise_op(other, operator.add)
+        return self.matrix_op_matrix_elementwise(other, operator.add)
 
     def subtract_from_matrix(self, other):
-        return self.matrix_elementwise_op(other, operator.sub)
+        return self.matrix_op_matrix_elementwise(other, operator.sub)
 
     def multiply_by_matrix(self, other):
-        return self.matrix_elementwise_op(other, operator.mul)
+        return self.matrix_op_matrix_elementwise(other, operator.mul)
 
     def divide_matrix(self, other):
-        return self.matrix_elementwise_op(other, operator.truediv)
+        return self.matrix_op_matrix_elementwise(other, operator.truediv)
 
     def modulo_matrix(self, other):
-        return self.matrix_elementwise_op(other, operator.mod)
+        return self.matrix_op_matrix_elementwise(other, operator.mod)
 
     def matmul(self, other):
         left, right = other, self

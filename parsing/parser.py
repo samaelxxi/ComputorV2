@@ -1,6 +1,6 @@
 """Parser class implementation"""
 
-from math_types import Operator, Number, ComplexNumber, Matrix, Function, Variable, Expression, AbstractMathType
+from math_types import Operator, Number, ComplexNumber, Matrix, Function, Variable, Expression
 from exceptions.parsing_exceptions import (BracketsMismatch, NoClosingBracket,
                                            UnknownToken, BadNumber, MatrixDiffElems,
                                            UnexpectedToken, EmptyMatrix, ExtraBracket)
@@ -10,7 +10,7 @@ from consts import OPERATOR_TOKENS
 
 class Parser:
     """Parser takes tokens and builds objects from it"""
-    def parse(self, tokens: List[str]) -> List[AbstractMathType]:
+    def parse(self, tokens: List[str]) -> List:
         """
         Parses all tokens at first into simple math_types at first
             then tries to build complex types from simple ones
@@ -49,7 +49,7 @@ class Parser:
             raise NoClosingBracket(brackets[0])
         return True
 
-    def _parse_individual_tokens(self, tokens: List[str]) -> List[AbstractMathType]:
+    def _parse_individual_tokens(self, tokens: List[str]) -> List:
         """
         Parses simple, not composed tokens
 
@@ -65,7 +65,7 @@ class Parser:
         return objs
 
     @staticmethod
-    def _parse_token(token: str) -> AbstractMathType:
+    def _parse_token(token: str):
         """
         Parses simple tokens to simple math objects. Raises exception if token is bad
 
@@ -86,7 +86,7 @@ class Parser:
             return Variable(token)
         raise UnknownToken(token)
 
-    def _parse_functions(self, objs: List[AbstractMathType]) -> List[AbstractMathType]:
+    def _parse_functions(self, objs: List) -> List:
         """
         Scans through list of simple math objects and tries to detect and transform
         functions. Function is detected if there's variable with brackets after it.
@@ -123,7 +123,7 @@ class Parser:
 
         return new_objs
 
-    def _parse_matrices(self, objs: List[AbstractMathType]) -> List[AbstractMathType]:
+    def _parse_matrices(self, objs: List) -> List:
         """
         Scans through list of simple math objects and tries to detect and transform
         matrices. Matrix is detected by square brackets.
@@ -142,7 +142,7 @@ class Parser:
         return new_objs
 
     @staticmethod
-    def _locate_matrix(objs: List[AbstractMathType]) -> Tuple[Optional[int], Optional[int]]:
+    def _locate_matrix(objs: List) -> Tuple[Optional[int], Optional[int]]:
         """
         Locates indices for leftmost and rightmost matrix brackets
 
@@ -168,7 +168,7 @@ class Parser:
         return idx1, idx2
 
     @staticmethod
-    def _parse_matrix(objs: List[AbstractMathType]) -> Matrix:
+    def _parse_matrix(objs: List) -> Matrix:
         """
         Takes list of objects that are located inside matrix and parses them
         to matrix object using simple state machine.
@@ -180,8 +180,12 @@ class Parser:
         objs = objs[1:-1]  # remove outer brackets
         exp = "["
         cur_row = []
+        cur_elem = []
         for obj in objs:
-            if isinstance(obj, Operator):
+            if isinstance(obj, Operator) and obj.op in ["+", "-", "%", "*", "/", "^", "**", "(", ")"] and "object" in exp:
+                cur_elem.append(obj)
+                exp = (",", "]", "object")
+            elif isinstance(obj, Operator):
                 if obj.op not in exp:
                     raise UnexpectedToken(obj)
                 if obj.op == "[":
@@ -189,10 +193,14 @@ class Parser:
                     cur_row = []
                 elif obj.op == ",":
                     exp = "object"
+                    cur_row.append(Expression(cur_elem))
+                    cur_elem = []
                 elif obj.op == ";":
                     exp = "["
                 elif obj.op == "]":
                     exp = ";"
+                    cur_row.append(Expression(cur_elem))
+                    cur_elem = []
                     matrix.matrix.append(cur_row)
                     matrix.rows += 1
                     if matrix.cols == 0:
@@ -200,9 +208,9 @@ class Parser:
                     else:
                         if matrix.cols != len(cur_row):
                             raise MatrixDiffElems
-            elif exp == "object" and isinstance(obj, (Number, ComplexNumber, Variable)):
-                cur_row.append(obj)
-                exp = (",", "]")
+            elif "object" in exp and isinstance(obj, (Number, ComplexNumber, Variable, Function)):
+                cur_elem.append(obj)
+                exp = (",", "]", "object")
             else:
                 raise UnexpectedToken(obj)
         if matrix.rows == 0:

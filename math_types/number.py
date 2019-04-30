@@ -11,7 +11,7 @@ class Number(MathPrimitive):
     Implementation of number and it's operations
     Number may interact with other ComplexNumber or Number
     """
-    operations = {"+": "add_to_num",
+    _operations = {"+": "add_to_num",
                   "-": "subtract_from_num",
                   "*": "multiply_by_num",
                   "/": "divide_num",

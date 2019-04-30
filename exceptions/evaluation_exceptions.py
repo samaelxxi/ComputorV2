@@ -39,3 +39,27 @@ class ExpressionIsNotValid(EvalException):
     def __init__(self, expr):
         message = "Expression is not valid: " + " ".join(str(obj) for obj in expr)
         super(ExpressionIsNotValid, self).__init__(message)
+
+
+class WrongMatrixElementType(EvalException):
+    def __init__(self, elem):
+        message = "Matrix can't containt elements of type {}".format(type(elem).__name__)
+        super(WrongMatrixElementType, self).__init__(message)
+
+
+class CantDetectUnknownVariable(EvalException):
+    def __init__(self):
+        message = "Can't detect unknown variable in equation"
+        super(CantDetectUnknownVariable, self).__init__(message)
+
+
+class IncorrectTerm(EvalException):
+    def __init__(self, objs):
+        message = "Term has incorrect form: ", str(objs)
+        super(IncorrectTerm, self).__init__(message)
+
+
+class CantSolveEquation(EvalException):
+    def __init__(self, equation):
+        message = "Cant solve equation of degree {}".format(equation)
+        super(CantSolveEquation, self).__init__(message)

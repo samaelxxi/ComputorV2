@@ -25,7 +25,8 @@ def test2():
 
 def test3():
     inp = ("varA", "=", "[", "[", "2", ",", "3", "]", ";", "[", "4", ",", "3", "]", "]")
-    out = (Variable("vara"), Operator("="), Matrix(2, 2, [[Number(2), Number(3)], [Number(4), Number(3)]]))
+    out = (Variable("vara"), Operator("="), Matrix(2, 2, [[Expression([Number(2)]), Expression([Number(3)])],
+                                                          [Expression([Number(4)]), Expression([Number(3)])]]))
     res = p.parse(inp)
     for i, elem in enumerate(res):
         assert elem == out[i]
@@ -76,7 +77,7 @@ def test8():
 
 def test9():
     inp = ("matrixA", "=", "[", "[", "0", "]", "]")
-    out = (Variable("matrixA"), Operator("="), Matrix(1, 1, [[Number(0)]]))
+    out = (Variable("matrixA"), Operator("="), Matrix(1, 1, [[Expression([Number(0)])]]))
     res = p.parse(inp)
     for i, elem in enumerate(res):
         assert elem == out[i]
@@ -85,7 +86,8 @@ def test9():
 def test10():
     inp = ("matrixB", "?", "%", "^", "[", "[", "1", "]", ";", "[", "0", "]", ";", "[", "3", "]", "]")
     out = (Variable("matrixb"), Operator("?"), Operator("%"), Operator("^"),
-           Matrix(3, 1, [[Number(1)], [Number(0)], [Number(3)]]))
+           Matrix(3, 1, [[Expression([Number(1)])], [Expression([Number(0)])],
+                         [Expression([Number(3)])]]))
     res = p.parse(inp)
     for i, elem in enumerate(res):
         assert elem == out[i]
@@ -105,20 +107,6 @@ def test_func1():
     for i, elem in enumerate(res):
         assert elem == out[i]
 
-def test11_1():
-    inp = ("matrixA", "=", "[", "[", "-", "0", "]", "]")
-    out = (Variable("matrixA"), Operator("="), Matrix(1, 1, [[Number(0)]]))
-    res = p.parse(inp)
-    for i, elem in enumerate(res):
-        assert elem == out[i]
-
-
-def test11_2():
-    inp = ("matrixA", "=", "[", "[", "-", "11.1", "]", "]")
-    out = (Variable("matrixA"), Operator("="), Matrix(1, 1, [[Number(-11.1)]]))
-    res = p.parse(inp)
-    for i, elem in enumerate(res):
-        assert elem == out[i]
 
 
 def test12():
@@ -141,12 +129,6 @@ def test14():
 
 def test15():
     inp = ("[", "0", "]")
-    with pytest.raises(UnexpectedToken) as e:
-        res = p.parse(inp)
-
-
-def test16():
-    inp = ("[", "[", "0", "1", "]", "]")
     with pytest.raises(UnexpectedToken) as e:
         res = p.parse(inp)
 

@@ -2,11 +2,7 @@ from abc import abstractmethod
 from exceptions.math_exceptions import OperationIsNotSupported
 
 
-class AbstractMathType:
-    pass
-
-
-class MathPrimitive(AbstractMathType):
+class MathPrimitive:
     """
     Abstract class for math objects such as Number, Complex Number and Complex Number
     They are united by behavior, which allows operations between any pair of this types
@@ -23,54 +19,54 @@ class MathPrimitive(AbstractMathType):
 
     @property
     @abstractmethod
-    def operations(self):
+    def _operations(self):
         raise NotImplementedError
 
     def __add__(self, other):
         try:
-            other_op_method = getattr(other, self.operations["+"])
+            other_op_method = getattr(other, self._operations["+"])
             return other_op_method(self)
         except AttributeError:
             raise OperationIsNotSupported(self.__class__, "+", type(other))
 
     def __sub__(self, other):
         try:
-            other_op_method = getattr(other, self.operations["-"])
+            other_op_method = getattr(other, self._operations["-"])
             return other_op_method(self)
         except AttributeError:
             raise OperationIsNotSupported(self.__class__, "-", type(other))
 
     def __mul__(self, other):
         try:
-            other_op_method = getattr(other, self.operations["*"])
+            other_op_method = getattr(other, self._operations["*"])
             return other_op_method(self)
         except AttributeError:
             raise OperationIsNotSupported(self.__class__, "*", type(other))
 
     def __truediv__(self, other):
         try:
-            other_op_method = getattr(other, self.operations["/"])
+            other_op_method = getattr(other, self._operations["/"])
             return other_op_method(self)
         except AttributeError:
             raise OperationIsNotSupported(self.__class__, "/", type(other))
 
     def __xor__(self, other):
         try:
-            other_op_method = getattr(other, self.operations["^"])
+            other_op_method = getattr(other, self._operations["^"])
             return other_op_method(self)
         except AttributeError:
             raise OperationIsNotSupported(self.__class__, "^", type(other))
 
     def __mod__(self, other):
         try:
-            other_op_method = getattr(other, self.operations["%"])
+            other_op_method = getattr(other, self._operations["%"])
             return other_op_method(self)
         except AttributeError:
             raise OperationIsNotSupported(self.__class__, "%", type(other))
 
     def __pow__(self, other):
         try:
-            other_op_method = getattr(other, self.operations["**"])
+            other_op_method = getattr(other, self._operations["**"])
             return other_op_method(self)
         except AttributeError:
             raise OperationIsNotSupported(self.__class__, "**", type(other))

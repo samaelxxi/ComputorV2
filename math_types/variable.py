@@ -1,13 +1,10 @@
 """Variable class implementation"""
-from math_types import AbstractMathType
-from typing import Optional
 
-
-class Variable(AbstractMathType):
+class Variable:
     """
     Variable class
     """
-    def __init__(self, name: str, val=Optional[AbstractMathType]):
+    def __init__(self, name: str, val=None):
         """
         :param name: name of variable(would be lowercased)
         :param val: variable value(None by default)

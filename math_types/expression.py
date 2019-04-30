@@ -1,13 +1,15 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 from consts import OPERATOR_PRECEDENCE, OPERATOR_MAP
-from math_types import AbstractMathType, Operator, Function, Variable
+from math_types import Operator, Function, Variable, MathPrimitive, Matrix, Number, ComplexNumber
 from exceptions.parsing_exceptions import UnexpectedToken
-from exceptions.evaluation_exceptions import FunctionNotExists, ExpressionIsNotValid, NoExpectedOperand, VariableNotDefined
+from exceptions.evaluation_exceptions import FunctionNotExists, ExpressionIsNotValid, \
+    NoExpectedOperand, VariableNotDefined, WrongMatrixElementType
 
 
 class Expression:
     def __init__(self, body):
         self.body = body
+        self._preprocess_expression()
 
     def __len__(self):
         return len(self.body)
@@ -18,7 +20,6 @@ class Expression:
     __repr__ = __str__
 
     def __eq__(self, other):
-        print(other)
         if self.body is None and other.body is None:
             return True
         if self.body is None or other.body is None:
@@ -27,28 +28,42 @@ class Expression:
             return False
         return all(self_el == other_el for self_el, other_el in zip(self.body, other.body))
 
-    def evaluate(self, variables, functions):
+    def evaluate(self, variables: Dict[str, Variable],
+                       functions: Dict[str, Function]) -> MathPrimitive:
+        """
+        Tries to evaluate self using simple algorithm:
+        while expression not simple(one term):
+            find deepest nested brackets
+            evaluate expression inside brackets and replace it with result
+
+        :param variables: dictionary of defined variables
+        :param functions: dictionary of defined functions
+        :return: result of evaluation
+        """
         original_body = self.body.copy()
         result = self._evaluate(variables, functions)
         self.body = original_body
         return result
 
-    def _evaluate(self, variables, functions):
-        """
-        Takes expression and tries to evaluate it
+    def _preprocess_expression(self):
+        objs = self._preprocess_hidden_multiplication(self.body)
+        objs = self._preprocess_unary_minus(objs)
+        self.body = objs
 
-        :param expr: list with operators and operands
-        :return: result of expression evaluation, one of math primitive types
+    def _evaluate(self, variables: Dict[str, Variable],
+                        functions: Dict[str, Function]) -> MathPrimitive:
+        """
+        Helper function for self.evaluate
         """
         # if (len(self.body) == 1 and isinstance(self.body[0], Function) and  # stupid shit for correction stupid test
         #         self.body[0].name in functions and isinstance(self.body[0].input.body[0], Variable)
         #         and not any(var == self.body[0].input for var in variables.values())
         #         and self.body[0].input == functions[self.body[0].name].input):
         #     return functions[self.body[0].name]
+        self._evaluate_matrices(variables, functions)
+        self.evaluate_variables(variables)
+        self._evaluate_functions(variables, functions)
 
-
-        self._replace_variables(variables)
-        self._replace_functions(variables, functions)
         res_expr = self.body[:]
         while True:
             idx1, idx2 = self._get_deepest_brackets(res_expr)
@@ -60,38 +75,53 @@ class Expression:
             res_expr = res_expr[:idx1] + [res] + res_expr[idx2+1:]
         return res
 
-    def _replace_functions(self, variables, functions) -> None:
+    def _evaluate_matrices(self, variables: Dict[str, Variable],
+                                 functions: Dict[str, Function]) -> None:
+        """
+        Searches for matrices in self.body and tries to evaluate their elements
+
+        :param variables: dictionary of defined variables
+        :param functions: dictionary of defined functions
+        """
+        for obj in self.body:
+            if isinstance(obj, Matrix):
+                for row_idx in range(obj.rows):
+                    for col_idx in range(obj.cols):
+                        matrix_elem = obj.matrix[row_idx][col_idx].evaluate(variables, functions)
+                        if not isinstance(matrix_elem, (Number, ComplexNumber)):
+                            raise WrongMatrixElementType(matrix_elem)
+                        obj.matrix[row_idx][col_idx] = matrix_elem
+
+    def _evaluate_functions(self, variables: Dict[str, Variable],
+                            functions: Dict[str, Function]) -> None:
+        """
+        Searches for functions in self.body and tries to evaluate them using definition from given dict
+
+        :param variables: dictionary of defined variables
+        :param functions: dictionary of defined functions
+        """
         for i, obj in enumerate(self.body):
             if isinstance(obj, Function):
                 func_name = obj.name
                 if func_name not in functions:
                     raise FunctionNotExists(func_name)
 
-                defined_func = functions[func_name]
-                func_var_name = defined_func.input.name
-                func_input_expr = obj.input
-                func_var_val = func_input_expr.evaluate(variables, functions)
-                func_body = defined_func.body
-                res = func_body.evaluate({func_var_name: Variable(func_var_name, func_var_val)},
-                                         functions)
+                res = functions[func_name].evaluate(obj.input, variables, functions)
 
                 self.body[i] = res
 
-    def _replace_variables(self, variables, exceptions: Optional[List[Variable]]=None) -> None:
+    def evaluate_variables(self, variables: Dict[str, Variable],
+                           exceptions: Optional[List[Variable]]=None) -> None:
         """
-        Takes expression and replaces all variables by it's values or throws error if it's not defined
+        Takes expression and replaces all variables by it's values or throws error if variable not defined
 
-        :param expr: list with operators and operands
+        :param variables: dictionary of defined variables
+        :param exceptions: list of variables which shouldn't be evaluated
         """
         for i, obj in enumerate(self.body):
             if isinstance(obj, Variable):
-                if exceptions:
-                    skip = False
-                    for var in exceptions:
-                        if var == obj:
-                            skip = True
-                            break
-                    if skip: continue
+                if exceptions and obj in exceptions:
+                    continue
 
                 var_name = obj.name
                 if var_name not in variables:
@@ -99,7 +129,7 @@ class Expression:
                 self.body[i] = variables[var_name].val
 
     @staticmethod
-    def _get_deepest_brackets(expr: List[AbstractMathType]) -> Tuple[Optional[int], Optional[int]]:
+    def _get_deepest_brackets(expr: List) -> Tuple[Optional[int], Optional[int]]:
         """
         Searches for deepest pair of brackets in expression
 
@@ -116,16 +146,17 @@ class Expression:
                     break
         return open_idx, close_idx
 
-    def _evaluate_expression_without_brackets(self, expr: List[AbstractMathType]) -> AbstractMathType:
+    @staticmethod
+    def _evaluate_expression_without_brackets(expr: List) -> MathPrimitive:
         """
-        Takes simple expression without any bracket and evaluates it
+        Takes simple expression (as list) without any bracket and evaluates it
 
         :param expr: list with operators and operands
         :return: result of expression evaluation, one of math primitive types
         """
         expr_copy = expr[:]
         while True:
-            op_idx = self._find_operator_with_highest_prec(expr)
+            op_idx = Expression._find_operator_with_highest_prec(expr)
             if op_idx is None:
                 if len(expr) != 1:
                     raise ExpressionIsNotValid(expr_copy)
@@ -136,7 +167,7 @@ class Expression:
             expr = expr[:op_idx-1] + [res] + expr[op_idx+2:]
 
     @staticmethod
-    def _find_operator_with_highest_prec(expr: List[AbstractMathType]) -> Optional[int]:
+    def _find_operator_with_highest_prec(expr: List) -> Optional[int]:
         """
         Searches for operator with highest precedence in expression without brackets
 
@@ -152,3 +183,46 @@ class Expression:
                     prec_val = OPERATOR_PRECEDENCE[obj.op]
                     op_idx = i
         return op_idx
+
+    @staticmethod
+    def _preprocess_unary_minus(expr: List) -> List:
+        """
+        Moves through expression and transform every unary minus to (-1 * val) expression
+
+        :param expr: list with operators and operands
+        :return: updated expression
+        """
+        new_expr = []
+
+        i = 0
+        while i < len(expr):
+            if (isinstance(expr[i], Operator) and expr[i].op == '-'):   # replace -2 with   (-1 * 2)
+                if ((i == 0 or (i != 0 and type(expr[i-1]) is Operator and expr[i-1].op not in ")]"))
+                        and i != (len(expr)-1)
+                        and type(expr[i+1]) in (Number, ComplexNumber, Matrix, Variable, Function)):
+                    new_expr.extend([Operator("("), Number(-1), Operator("*"), expr[i+1], Operator(")")])
+                    i += 2
+                    continue
+            new_expr.append(expr[i])
+            i += 1
+        return new_expr
+
+    @staticmethod
+    def _preprocess_hidden_multiplication(expr: List) -> List:
+        """
+        Moves through expression and transforms every hidden multiplication
+        such as 2x or 4i to 2*i or 4*i
+        :param expr: list with operators and operands
+        :return: updated expression
+        """
+        new_expr = []
+        i = 0
+        while i < len(expr):
+            if (isinstance(expr[i], Number) and i != len(expr)-1 and
+                    isinstance(expr[i+1], (Variable, ComplexNumber))):
+                new_expr.extend([expr[i], Operator("*"), expr[i+1]])
+                i += 1
+            else:
+                new_expr.append(expr[i])
+            i += 1
+        return new_expr

@@ -28,3 +28,4 @@ class PowerError(MathException):
     def __init__(self, left, right):
         message = "Can't exponentiate numbers: {} ^ {}".format(left, right)
         super(PowerError, self).__init__(message)
+

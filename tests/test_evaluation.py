@@ -290,11 +290,6 @@ def test28():
     with pytest.raises(TooManyAssignments):
         i.eval_string("= f(x) = 2")
 
-def test29():
-    i = Interpreter()
-    with pytest.raises(UnexpectedToken):
-        i.eval_string("2 = 2 ?")
-
 def test30():
     i = Interpreter()
     with pytest.raises(UnexpectedToken):
@@ -439,3 +434,152 @@ def test54():
     i.eval_string("y = f(2)")
     i.eval_string("g(z) = z * y")
     assert i.eval_string("g(z) = ?") == "z * y"
+
+def test55():
+    i = Interpreter()
+    with pytest.raises(ExpressionIsNotValid) as e:
+        i.eval_string("[[0 1]]")
+
+def test56():
+    i = Interpreter()
+    assert i.eval_string("[[0 + 1]]") == "[ 1 ]"
+
+
+def test57():
+    i = Interpreter()
+    i.eval_string("x = 6")
+    i.eval_string("f(x) = x - 5")
+    assert i.eval_string("[[f(x) * (2 + 3) - x]]") == "[ -1 ]"
+
+def test58():
+    i = Interpreter()
+    i.eval_string("x = 6")
+    i.eval_string("y = [[x - 6, x * 30]]")
+    with pytest.raises(WrongMatrixElementType) as e:
+        i.eval_string("[[y + 3]]")
+
+def test59():
+    i = Interpreter()
+    i.eval_string("a = [[2 - i, 3 + i]; [5i, 15]]")
+    i.eval_string("b = [[-2, -i]; [i, 3]]")
+    assert i.eval_string("a ** b") == "[ -5 + 5i, 8 + 1i ]\n[ 0 + 5i, 50 - 0i ]"
+
+# equations
+def test60():
+    i = Interpreter()
+    out_str = "Reduced equation: x - 5 = 0\nSolution: x = 5.0"
+    i.eval_string("f(x) = x")
+    assert i.eval_string("f(x) = 5 ?") == out_str
+
+def test67():
+    i = Interpreter()
+    out_str = "Reduced equation: 2x - 10 = 0\nSolution: x = 5.0"
+    assert i.eval_string("2x - 10 = x + x - 2 * x ?") == out_str
+
+def test68():
+    i = Interpreter()
+    with pytest.raises(CantDetectUnknownVariable) as e:
+        assert i.eval_string("x = y ?") == "4"
+
+def test70():
+    i = Interpreter()
+    with pytest.raises(FunctionNotExists) as e:
+        assert i.eval_string("x = f(0) ?") == "4"
+
+def test72():
+    i = Interpreter()
+    out_str = "Reduced equation: -1 = 0\nNo solutions."
+    assert i.eval_string("0 = 1 ?") == out_str
+
+def test73():
+    i = Interpreter()
+    out_str = "Reduced equation: -1 = 0\nNo solutions."
+    assert i.eval_string("x = x + 1?") == out_str
+
+def test74():
+    i = Interpreter()
+    out_str = "Reduced equation: 0 = 0\nSolution is all real values."
+    assert i.eval_string("0 = 0 ?") == out_str
+
+def test74_1():
+    i = Interpreter()
+    out_str = "Reduced equation: 0 = 0\nSolution is all real values."
+    assert i.eval_string("x^0 = 1 ?") == out_str
+
+def test74_2():
+    i = Interpreter()
+    out_str = "Reduced equation: 1 = 0\nNo solutions."
+    assert i.eval_string("x^0 = 0 ?") == out_str
+
+def test74_3():
+    i = Interpreter()
+    out_str = "Reduced equation: -x = 0\nSolution: x = 0"
+    assert i.eval_string("0 = x ?") == out_str
+
+def test75():
+    i = Interpreter()
+    out_str = "Reduced equation: 0 = 0\nSolution is all real values."
+    assert i.eval_string("x = x ?") == out_str
+
+def test76():
+    i = Interpreter()
+    out_str = "Reduced equation: 0 = 0\nSolution is all real values."
+    assert i.eval_string("x^2 + 3 * x^3 - x^3 = 2*x^3 + x^2 ?") == out_str
+
+def test77():
+    i = Interpreter()
+    out_str = "Reduced equation: x = 0\nSolution: x = 0"
+    assert i.eval_string("x = 0 ?") == out_str
+
+def test78():
+    i = Interpreter()
+    out_str = "Reduced equation: x = 0\nSolution: x = 0"
+    assert i.eval_string("x^1 + 0 = 0 ?") == out_str
+
+def test79():
+    i = Interpreter()
+    out_str = "Reduced equation: x - 1 = 0\nSolution: x = 1.0"
+    assert i.eval_string("x = 2 - 1 ?") == out_str
+
+def test80():
+    i = Interpreter()
+    out_str = "Reduced equation: 55x + 55 = 0\nSolution: x = -1.0"
+    assert i.eval_string("55x^1 = 1 - 56 ?") == out_str
+
+def test81():
+    i = Interpreter()
+    out_str = "Reduced equation: x^2 = 0\nDiscriminant is zero\nSolution: x = 0.0"
+    assert i.eval_string("x^2 = 0 ?") == out_str
+
+def test82():
+    i = Interpreter()
+    out_str = "Reduced equation: x^2 + 2x + 1 = 0\nDiscriminant is zero\nSolution: x = -1.0"
+    assert i.eval_string("x^2 + 2x + 1 = 0 ?") == out_str
+
+def test83():
+    i = Interpreter()
+    out_str = "Reduced equation: x^2 - x = 0\nDiscriminant is positive\nSolution: x1 = 0.0, x2 = 1.0"
+    assert i.eval_string("x^2 - x = 0 ?") == out_str
+
+def test84():
+    i = Interpreter()
+    out_str = "Reduced equation: x^2 - 1 = 0\nDiscriminant is positive\nSolution: x1 = -1.0, x2 = 1.0"
+    assert i.eval_string("x^2 - 1 = 0 ?") == out_str
+
+def test85():
+    i = Interpreter()
+    out_str = "Reduced equation: 4x^2 + 8x - 5 = 0\nDiscriminant is positive\nSolution: x1 = -2.5, x2 = 0.5"
+    assert i.eval_string("x^2 + 4x - 5 = -3x^2 - 4*x + 0 ?") == out_str
+
+def test86():
+    i = Interpreter()
+    out_str = "Reduced equation: x^2 + 2x + 2 = 0\nDiscriminant is negative\nSolution: x1 = -1.0 + 1.0i, x2 = -1.0 - 1.0i"
+    assert i.eval_string("x^2 + 2x +2 = 0 ?") == out_str
+
+def test87():
+    i = Interpreter()
+    i.eval_string("f(x) = x+2")
+    i.eval_string("y = 10")
+    out1 = i.eval_string("f(x) + f(y)*x^2 - y = 0 ?")
+    out2 = i.eval_string("x+2 + 12x^2 - 10 = 0 ?")
+    assert out1 == out2

@@ -5,8 +5,7 @@ Contains Tokenizer class, which has only tokenize method
 from string import whitespace
 from exceptions.parsing_exceptions import UnknownToken
 from typing import List, Tuple
-
-ONE_CHAR_TOKENS = ["+", "-", "*", "/", "%", "^", "(", ")", "=", "?", "[", "]", ",", ";"]
+from consts import ONE_CHAR_TOKENS
 
 
 class Tokenizer:

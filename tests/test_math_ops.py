@@ -246,46 +246,21 @@ def test59():
     with pytest.raises(OperationIsNotSupported):
         Number(2) ^ M1
 
-
-def test60():
-    with pytest.raises(OperationIsNotSupported):
-        ComplexNumber(2, 7) + M1
-
-
 def test61():
     with pytest.raises(OperationIsNotSupported):
         ComplexNumber(2, 7) - M1
-
-
-def test62():
-    with pytest.raises(OperationIsNotSupported):
-        ComplexNumber(2, 7) * M1
-
 
 def test63():
     with pytest.raises(OperationIsNotSupported):
         ComplexNumber(2, 8) / M1
 
-
 def test64():
     with pytest.raises(OperationIsNotSupported):
         ComplexNumber(2, 8) % M1
 
-
 def test65():
     with pytest.raises(OperationIsNotSupported):
         ComplexNumber(2, 1) ^ M1
-
-
-def test66():
-    with pytest.raises(OperationIsNotSupported):
-        M1 * ComplexNumber
-
-
-def test67():
-    with pytest.raises(OperationIsNotSupported):
-        M1 / ComplexNumber(2, 4)
-
 
 def test68():
     with pytest.raises(OperationIsNotSupported):
@@ -372,11 +347,3 @@ def test85():
 def test86():
     with pytest.raises(ZeroDivisionError):
         Matrix(1, 2, [[Number(2), Number(3)]]) / Matrix(1, 2, [[Number(5), Number(0)]])
-
-
-
-
-
-
-
-
