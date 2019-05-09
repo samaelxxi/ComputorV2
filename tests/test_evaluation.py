@@ -583,3 +583,43 @@ def test87():
     out1 = i.eval_string("f(x) + f(y)*x^2 - y = 0 ?")
     out2 = i.eval_string("x+2 + 12x^2 - 10 = 0 ?")
     assert out1 == out2
+
+# BONUSES
+
+def test_spec_func():
+    i = Interpreter()
+    assert i.eval_string("sin(0)") == "0"
+    assert i.eval_string("sin(pi/2) ") == "1"
+    assert i.eval_string("sin(pi) ") == "0"
+    i.eval_string("y = 0")
+    assert i.eval_string("sin(y)") == "0"
+    i.eval_string("f(x) = sin(x) - 2")
+    assert i.eval_string("f(0)") == "-2"
+
+
+def test_spec_func_exc():
+    i = Interpreter()
+    with pytest.raises(SpecialFunctionWrongUsage) as e:
+        i.eval_string("sin(x) = 0 ?")
+
+
+def test_matrix_inversion():
+    i = Interpreter()
+    i.eval_string("A = [[1.0, 0.0]; [0.0, 1.0]]")
+    i.eval_string("Ainv = inv(A)")
+    i.eval_string("B = [[4, 3]; [3, 2]]")
+    i.eval_string("Binv = inv(B)")
+    assert i.eval_string("A ** inv(A)") == i.eval_string("A")
+    assert i.eval_string("inv(A)") == i.eval_string("Ainv")
+
+    i.eval_string("C = [[1, 0]; [0, 0]]")
+    i.eval_string("D = [[1, 0, 3]; [0, 0, 6]]")
+
+    with pytest.raises(MatrixIsNonInvertible) as e:
+        i.eval_string("inv(C)")
+    with pytest.raises(MatrixIsNonInvertible) as e:
+        i.eval_string("inv(D)")
+
+    i.eval_string("K = [[1, 2, 3]]")
+    i.eval_string("C = [[1]; [2]; [3]]")
+    i.eval_string("transp(K) - C")

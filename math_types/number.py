@@ -2,7 +2,7 @@
 
 from math import isclose
 from exceptions.math_exceptions import OperationIsNotSupported, ZeroDivisionError, PowerError
-from math_types import ComplexNumber, Matrix, MathPrimitive
+from math_types import ComplexNumber, MathPrimitive
 import operator
 
 
@@ -82,6 +82,7 @@ class Number(MathPrimitive):
         return res
 
     def matrix_elementwise_op(self, matrix, op):
+        from math_types import Matrix
         res = Matrix(matrix.rows, matrix.cols, [row[:] for row in matrix.matrix])
         for row_idx in range(res.rows):
             for col_idx in range(res.cols):

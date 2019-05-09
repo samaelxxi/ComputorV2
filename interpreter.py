@@ -5,6 +5,8 @@ from typing import Tuple, List
 from parsing.tokenizer import Tokenizer
 from parsing.parser import Parser
 from math_types import Operator, Function, Variable, Expression, Equation
+from math_types.function import SpecialMathFunction, MatrixInversionFunc, MatrixTransposeFunc
+from consts import DEFINED_VARS, DEFINED_FUNCS
 
 
 class Interpreter:
@@ -21,10 +23,27 @@ class Interpreter:
         [coefficient][*][variable][^degree]
     """
     def __init__(self):
-        self._variables = {}
-        self._functions = {}
+        self._variables = self._init_predefined_variables()
+        self._functions = self._init_predefined_functions()
+
         self._parser = Parser()
         self._tokenizer = Tokenizer()
+
+    def _init_predefined_variables(self):
+        variables = {}
+        for var_name, var_val in DEFINED_VARS.items():
+            variables[var_name] = Variable(var_name, var_val)
+        return variables
+
+    def _init_predefined_functions(self):
+        functions = {}
+        for func_name, func in DEFINED_FUNCS.items():
+            func_obj = SpecialMathFunction(func_name, func)
+            functions[func_name] = func_obj
+        functions["inv"] = MatrixInversionFunc("inv")
+        functions["transp"] = MatrixTransposeFunc("transp")
+
+        return functions
 
     def read_eval_print_loop(self) -> None:
         """
@@ -130,7 +149,7 @@ class Interpreter:
             left = expr[:assignment_indices[0]]
             right = expr[assignment_indices[0]+1:]
 
-        if (question_mark and len(right) == 1) or right is None:
+        if  right is None or (question_mark and len(right) == 1):
             op_type = "evaluation"   # 'expression = ?' or no assignment operator line
         elif question_mark and len(right) > 1:
             op_type = "equation"

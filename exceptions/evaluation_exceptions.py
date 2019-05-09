@@ -63,3 +63,21 @@ class CantSolveEquation(EvalException):
     def __init__(self, equation):
         message = "Cant solve equation of degree {}".format(equation)
         super(CantSolveEquation, self).__init__(message)
+
+
+class SpecialFunctionWrongUsage(EvalException):
+    def __init__(self):
+        message = "Special functions can't be used in such way."
+        super(SpecialFunctionWrongUsage, self).__init__(message)
+
+
+class BadFunctionInput(EvalException):
+    def __init__(self, func_name, input_):
+        message = "Bad input to func {}: {}".format(func_name, input_)
+        super(BadFunctionInput, self).__init__(message)
+
+
+class MatrixIsNonInvertible(EvalException):
+    def __init__(self, matrix):
+        message = "Can't invert matrix:\n {}".format(matrix)
+        super(MatrixIsNonInvertible, self).__init__(message)

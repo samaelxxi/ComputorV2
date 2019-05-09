@@ -4,7 +4,6 @@ import operator
 from math import isclose
 from exceptions.math_exceptions import ZeroDivisionError
 from math_types import MathPrimitive
-from math_types.matrix import Matrix
 
 
 class ComplexNumber(MathPrimitive):
@@ -68,6 +67,7 @@ class ComplexNumber(MathPrimitive):
         return ComplexNumber(real, imag)
 
     def matrix_elementwise_op(self, matrix, op):
+        from math_types import Matrix
         res = Matrix(matrix.rows, matrix.cols, [row[:] for row in matrix.matrix])
         for row_idx in range(res.rows):
             for col_idx in range(res.cols):

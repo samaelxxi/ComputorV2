@@ -7,9 +7,7 @@ import os
 TODO
 Functionality:
 Bonuses:
-    Special function (sin, cos, tan, abs, sqrt...)
-    Special commands (plot, vars)
-    Matrix inversion?
+    Special commands (plot, vars, inv)
 
 stupid fucking test_54 for stupid correction form
 
@@ -25,6 +23,9 @@ Parsing is ugly as shit goddamnit
 
 
 DONE:
+Special functions (sin, cos, tan, abs, sqrt, log, inv, transp)
+Matrix inversion and transpose
+
 1. Add equations(tests first)
 0. Matrices + Complex Numbers?
 - Crazy powers leading to complex numbers...

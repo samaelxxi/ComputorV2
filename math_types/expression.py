@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple, Dict
 from consts import OPERATOR_PRECEDENCE, OPERATOR_MAP
-from math_types import Operator, Function, Variable, MathPrimitive, Matrix, Number, ComplexNumber
+from math_types import Variable, MathPrimitive, Matrix, Number, ComplexNumber, Function
+from math_types.operator import Operator
 from exceptions.parsing_exceptions import UnexpectedToken
 from exceptions.evaluation_exceptions import FunctionNotExists, ExpressionIsNotValid, \
     NoExpectedOperand, VariableNotDefined, WrongMatrixElementType
