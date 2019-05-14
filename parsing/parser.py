@@ -1,6 +1,6 @@
 """Parser class implementation"""
 
-from math_types import Operator, Number, ComplexNumber, Matrix, Function, Variable, Expression
+from math_types import Operator, Number, ComplexNumber, Matrix, AFunction, UserDefinedFunction, Variable, Expression
 from exceptions.parsing_exceptions import (BracketsMismatch, NoClosingBracket,
                                            UnknownToken, BadNumber, MatrixDiffElems,
                                            UnexpectedToken, EmptyMatrix, ExtraBracket)
@@ -110,7 +110,7 @@ class Parser:
                         func_input = self._parse_functions(func_input)
                         func_input = self._parse_matrices(func_input)
                         func_input = Expression(func_input)
-                        new_objs.append(Function(name=objs[func_start_idx].name,
+                        new_objs.append(UserDefinedFunction(name=objs[func_start_idx].name,
                                                  input_=func_input))
 
             elif (isinstance(obj, Variable) and i+1 != len(objs) and
@@ -208,7 +208,7 @@ class Parser:
                     else:
                         if matrix.cols != len(cur_row):
                             raise MatrixDiffElems
-            elif "object" in exp and isinstance(obj, (Number, ComplexNumber, Variable, Function)):
+            elif "object" in exp and isinstance(obj, (Number, ComplexNumber, Variable, AFunction)):
                 cur_elem.append(obj)
                 exp = (",", "]", "object")
             else:

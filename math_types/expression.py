@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple, Dict
 from consts import OPERATOR_PRECEDENCE, OPERATOR_MAP
-from math_types import Variable, MathPrimitive, Matrix, Number, ComplexNumber, Function
+from math_types import Variable, MathPrimitive, Matrix, Number, ComplexNumber, AFunction
 from math_types.operator import Operator
 from exceptions.parsing_exceptions import UnexpectedToken
 from exceptions.evaluation_exceptions import FunctionNotExists, ExpressionIsNotValid, \
@@ -30,7 +30,7 @@ class Expression:
         return all(self_el == other_el for self_el, other_el in zip(self.body, other.body))
 
     def evaluate(self, variables: Dict[str, Variable],
-                       functions: Dict[str, Function]) -> MathPrimitive:
+                       functions: Dict[str, AFunction]) -> MathPrimitive:
         """
         Tries to evaluate self using simple algorithm:
         while expression not simple(one term):
@@ -52,7 +52,7 @@ class Expression:
         self.body = objs
 
     def _evaluate(self, variables: Dict[str, Variable],
-                        functions: Dict[str, Function]) -> MathPrimitive:
+                        functions: Dict[str, AFunction]) -> MathPrimitive:
         """
         Helper function for self.evaluate
         """
@@ -77,7 +77,7 @@ class Expression:
         return res
 
     def _evaluate_matrices(self, variables: Dict[str, Variable],
-                                 functions: Dict[str, Function]) -> None:
+                                 functions: Dict[str, AFunction]) -> None:
         """
         Searches for matrices in self.body and tries to evaluate their elements
 
@@ -94,7 +94,7 @@ class Expression:
                         obj.matrix[row_idx][col_idx] = matrix_elem
 
     def _evaluate_functions(self, variables: Dict[str, Variable],
-                            functions: Dict[str, Function]) -> None:
+                            functions: Dict[str, AFunction]) -> None:
         """
         Searches for functions in self.body and tries to evaluate them using definition from given dict
 
@@ -102,7 +102,7 @@ class Expression:
         :param functions: dictionary of defined functions
         """
         for i, obj in enumerate(self.body):
-            if isinstance(obj, Function):
+            if isinstance(obj, AFunction):
                 func_name = obj.name
                 if func_name not in functions:
                     raise FunctionNotExists(func_name)
@@ -200,7 +200,7 @@ class Expression:
             if (isinstance(expr[i], Operator) and expr[i].op == '-'):   # replace -2 with   (-1 * 2)
                 if ((i == 0 or (i != 0 and type(expr[i-1]) is Operator and expr[i-1].op not in ")]"))
                         and i != (len(expr)-1)
-                        and type(expr[i+1]) in (Number, ComplexNumber, Matrix, Variable, Function)):
+                        and type(expr[i+1]) in (Number, ComplexNumber, Matrix, Variable, AFunction)):
                     new_expr.extend([Operator("("), Number(-1), Operator("*"), expr[i+1], Operator(")")])
                     i += 2
                     continue

@@ -2,7 +2,7 @@
 from math import isclose
 from exceptions.evaluation_exceptions import CantDetectUnknownVariable, IncorrectTerm, \
     FunctionNotExists, EvalException
-from math_types import Variable, Function, Number, Operator
+from math_types import Variable, AFunction, Number, Operator
 from math_types.equation_solver import EquationSolver
 
 
@@ -31,6 +31,7 @@ class Term:
         Takes list of math objects and tries to construct Term
         Correct sequence of objects it's Number, Operator(*), Variable, Operator(^), Number
         Some of the objects could be optional
+        I fucking hate to parse things and should learn some regex by now, but I didn't so here it goes...
 
         :param math_objs: list of math objects
         :return: Term
@@ -46,7 +47,7 @@ class Term:
                 else:
                     raise IncorrectTerm(objs)
             # read number and possible * operator
-            if not isinstance(objs[idx], (Number, Variable)):
+            if idx >= len(objs) or not isinstance(objs[idx], (Number, Variable)):
                 raise IncorrectTerm(objs)
             if isinstance(objs[idx], Number):
                 coef = objs[idx].val
@@ -57,6 +58,8 @@ class Term:
                         if objs[idx + 1].op != "*":
                             raise IncorrectTerm(objs)
                         idx = idx + 2
+                        if len(objs) <= idx:
+                            raise IncorrectTerm(objs)
                     else:
                         idx = idx + 1
             else:
@@ -146,7 +149,7 @@ class Polynomial:
                     new_objs.append(variables[obj.name].val)
                 else:
                     new_objs.append(obj)
-            elif isinstance(obj, Function):
+            elif isinstance(obj, AFunction):
                 if obj.name not in functions:
                     raise FunctionNotExists(obj.name)
                 func = functions[obj.name]

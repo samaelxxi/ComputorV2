@@ -239,7 +239,7 @@ def test23():
     i = Interpreter()
     inp_str = " funA(x) = 2*x^5 + 4x^2 - 5*x + 4"
     out_str = i.eval_string(inp_str)
-    assert out_str == "2 * x ^ 5 + 4 * x ^ 2 - 5 * x + 4"
+    assert out_str == "funa(x) = 2 * x ^ 5 + 4 * x ^ 2 - 5 * x + 4"
     assert "funa" in i._functions and i._functions["funa"].input.name == "x"
 
 
@@ -248,7 +248,7 @@ def test24():
     out_str = i.eval_string("varA = 2 + 4 *2 - 5 %4 + 2 * (4 + 5)")
     out_str = i.eval_string(" varB = 2 * varA - 5 %4")
     out_str = i.eval_string("funA(x) = varA + varB * 4 - 1 / 2 + x")
-    assert out_str == "27 + 53 * 4 - 1 / 2 + x"
+    assert out_str == "funa(x) = 27 + 53 * 4 - 1 / 2 + x"
     i.eval_string("varC = 2 * varA - varB")
     out_str = i.eval_string("varD = funA(varC)")
     assert out_str == "239.5"
@@ -584,17 +584,25 @@ def test87():
     out2 = i.eval_string("x+2 + 12x^2 - 10 = 0 ?")
     assert out1 == out2
 
+
+def test88():
+    i = Interpreter()
+    with pytest.raises(IncorrectTerm) as e:
+        out2 = i.eval_string("x+2 + 12x^2 - 10 += 0 ?")
+    with pytest.raises(IncorrectTerm) as e:
+        out2 = i.eval_string("x+2 + 12x^2 - 10 *= 0 ?")
+
 # BONUSES
 
 def test_spec_func():
     i = Interpreter()
-    assert i.eval_string("sin(0)") == "0"
-    assert i.eval_string("sin(pi/2) ") == "1"
-    assert i.eval_string("sin(pi) ") == "0"
+    assert i.eval_string("sin(0)") == "0.0"
+    assert i.eval_string("sin(pi/2) ") == "1.0"
+    assert i.eval_string("sin(pi) ") == "0.0"
     i.eval_string("y = 0")
-    assert i.eval_string("sin(y)") == "0"
+    assert i.eval_string("sin(y)") == "0.0"
     i.eval_string("f(x) = sin(x) - 2")
-    assert i.eval_string("f(0)") == "-2"
+    assert i.eval_string("f(0)") == "-2.0"
 
 
 def test_spec_func_exc():
@@ -623,3 +631,35 @@ def test_matrix_inversion():
     i.eval_string("K = [[1, 2, 3]]")
     i.eval_string("C = [[1]; [2]; [3]]")
     i.eval_string("transp(K) - C")
+
+
+def test_special_commands_exceptions():
+    i = Interpreter()
+    with pytest.raises(WrongSpecialCommandUse) as e:
+        i.eval_string("vars() = ?")
+    with pytest.raises(WrongSpecialCommandUse) as e:
+        i.eval_string("vars() = ")
+    with pytest.raises(WrongSpecialCommandUse) as e:
+        i.eval_string("vars() = 2 + 3")
+    with pytest.raises(WrongSpecialCommandUse) as e:
+        i.eval_string("plot() = x ?")
+    with pytest.raises(WrongSpecialCommandUse) as e:
+        i.eval_string("2 * linreg() + 3")
+    with pytest.raises(WrongSpecialCommandUse) as e:
+        i.eval_string("plot(2+3)")
+
+
+def test_recursive_func():
+    i = Interpreter()
+    with pytest.raises(FunctionIsRecursive) as e:
+        i.eval_string("f(x) = f(vars())")
+    with pytest.raises(FunctionIsRecursive):
+        i.eval_string("f(x) = f(x)")
+    with pytest.raises(FunctionIsRecursive):
+        i.eval_string("g(x) = x")
+        i.eval_string("f(x) = g(2 + f(x))")
+    with pytest.raises(FunctionIsRecursive):
+        i.eval_string("g(x) = x")
+        i.eval_string("k(x) = g(x) + x")
+        i.eval_string("s(x) = k(x)")
+        i.eval_string("g(x) = s(x)")

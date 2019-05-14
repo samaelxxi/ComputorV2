@@ -103,6 +103,14 @@ class Matrix(MathPrimitive):
 
     @staticmethod
     def _calc_matrix_matmul_elem(left, right, row, col):
+        """
+        Calculates dot product of left matrix row and right matrix column
+        :param left: left matrix
+        :param right: right matrix
+        :param row: row index
+        :param col: column index
+        :return: result of dot product
+        """
         res = None
         for i in range(left.cols):
             cur_prod = left.matrix[row][i] * right.matrix[i][col]
@@ -111,6 +119,11 @@ class Matrix(MathPrimitive):
         return res
 
     def invert_matrix(self):
+        """
+        Creates and returns inversion of self
+
+        :return: inverted Matrix
+        """
         if self.rows != self.cols:
             raise MatrixIsNonInvertible(self)
         n = self.rows
@@ -123,6 +136,11 @@ class Matrix(MathPrimitive):
         return inverted
 
     def transpose_matrix(self):
+        """
+        Creates and returns transpose of self
+
+        :return: transposed Matrix
+        """
         transposed = Matrix(self.cols, self.rows, [[None for _ in range(self.rows)] for _ in range(self.cols)])
         for i in range(self.cols):
             for j in range(self.rows):

@@ -42,7 +42,7 @@ def test4():
 
 def test5():
     inp = ("funA", "(", "x", ")", "=", "2", "*", "x", "^", "5", "+", "4", "x", "^", "2", "-", "5", "*", "x", "+", "4")
-    out = (Function("funa", Expression([Variable("x")])), Operator("="), Number(2), Operator("*"), Variable("x"), Operator("^"), Number(5),
+    out = (UserDefinedFunction("funa", Expression([Variable("x")])), Operator("="), Number(2), Operator("*"), Variable("x"), Operator("^"), Number(5),
           Operator("+"), Number(4), Variable("x"), Operator("^"), Number(2), Operator("-"), Number(5), Operator("*"),
           Variable("x"), Operator("+"), Number(4))
     res = p.parse(inp)
@@ -52,7 +52,7 @@ def test5():
 
 def test6():
     inp = ("funB", "(", "y", ")", "=", "43", "*", "y", "/", "(", "4", "%", "2", "*", "y", ")")
-    out = (Function("funb", Expression([Variable("y")])), Operator("="), Number(43), Operator("*"), Variable("y"), Operator("/"),
+    out = (UserDefinedFunction("funb", Expression([Variable("y")])), Operator("="), Number(43), Operator("*"), Variable("y"), Operator("/"),
            Operator("("), Number(4), Operator("%"), Number(2), Operator("*"), Variable("y"), Operator(")"))
     res = p.parse(inp)
     for i, elem in enumerate(res):
@@ -61,7 +61,7 @@ def test6():
 
 def test7():
     inp = ("vardddd", "=", "funchello", "(", "world", ")")
-    out = (Variable("vardddd"), Operator("="), Function("funchello", Expression([Variable("world")])))
+    out = (Variable("vardddd"), Operator("="), UserDefinedFunction("funchello", Expression([Variable("world")])))
     res = p.parse(inp)
     for i, elem in enumerate(res):
         assert elem == out[i]
@@ -69,7 +69,7 @@ def test7():
 
 def test8():
     inp = ("funA", "(", "2", ")", "+", "funB", "(", "4", ")", "=", "?")
-    out = (Function("funa", Expression([Number(2)])), Operator("+"), Function("funb", Expression([Number(4)])), Operator("="), Operator("?"))
+    out = (UserDefinedFunction("funa", Expression([Number(2)])), Operator("+"), UserDefinedFunction("funb", Expression([Number(4)])), Operator("="), Operator("?"))
     res = p.parse(inp)
     for i, elem in enumerate(res):
         assert elem == out[i]
@@ -95,14 +95,14 @@ def test10():
 
 def test11():
     inp = ("func", "(", "x", ")", "=", "x")
-    out = (Function("func", Expression([Variable("x")])), Operator("="), Variable("x"))
+    out = (UserDefinedFunction("func", Expression([Variable("x")])), Operator("="), Variable("x"))
     res = p.parse(inp)
     for i, elem in enumerate(res):
         assert elem == out[i]
 
 def test_func1():
     inp = ("x", "=", "func", "(", "2", "+", "3", ")")
-    out = (Variable("x"), Operator("="), Function("func", Expression([Number(2), Operator("+"), Number(3)])))
+    out = (Variable("x"), Operator("="), UserDefinedFunction("func", Expression([Number(2), Operator("+"), Number(3)])))
     res = p.parse(inp)
     for i, elem in enumerate(res):
         assert elem == out[i]
@@ -165,11 +165,11 @@ def test21():
 def test22():
     inp = ("fun", "(", "2", "+", "3", ")")
     res = p.parse(inp)
-    assert res[0] == Function("fun", Expression([Number(2), Operator("+"), Number(3)]))
+    assert res[0] == UserDefinedFunction("fun", Expression([Number(2), Operator("+"), Number(3)]))
 
 def test23():
     inp = ("x", "=", "y", "(", "fun", "(", "2", ")", ")")
-    out = (Variable("x"), Operator("="), Function("y", Expression([Function("fun", Expression([Number(2)]))])))
+    out = (Variable("x"), Operator("="), UserDefinedFunction("y", Expression([UserDefinedFunction("fun", Expression([Number(2)]))])))
     res = p.parse(inp)
     print(res)
     for i, elem in enumerate(res):
@@ -177,7 +177,7 @@ def test23():
 
 def test24():
     inp = ("x", "=", "y", "(", "(", "2", "+", "3", ")", "*", "2", ")")
-    out = (Variable("x"), Operator("="), Function("y", Expression([Operator("("), Number(2), Operator("+"),
+    out = (Variable("x"), Operator("="), UserDefinedFunction("y", Expression([Operator("("), Number(2), Operator("+"),
                                                                    Number(3), Operator(")"), Operator("*"),
                                                                    Number(2)])))
     res = p.parse(inp)

@@ -1,5 +1,6 @@
 """Variable class implementation"""
 
+
 class Variable:
     """
     Variable class
@@ -16,7 +17,10 @@ class Variable:
         return self.name == other.name
 
     def __str__(self):
-        return self.name
+        if self.val is not None:
+            return "{} = {}".format(self.name, self.val)
+        else:
+            return self.name
 
     def __hash__(self):
         return hash(self.name)

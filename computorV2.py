@@ -5,9 +5,9 @@ import os
 
 """
 TODO
+REFACTOR
 Functionality:
 Bonuses:
-    Special commands (plot, vars, inv)
 
 stupid fucking test_54 for stupid correction form
 
@@ -23,8 +23,10 @@ Parsing is ugly as shit goddamnit
 
 
 DONE:
+recursive definition
 Special functions (sin, cos, tan, abs, sqrt, log, inv, transp)
 Matrix inversion and transpose
+Special commands (plot, vars)
 
 1. Add equations(tests first)
 0. Matrices + Complex Numbers?
@@ -50,3 +52,4 @@ if __name__ == "__main__":
             print("Wrong file")
             exit(1)
         interpreter.read_eval_print_file(sys.argv[1])
+        interpreter.read_eval_print_loop()

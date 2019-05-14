@@ -21,11 +21,21 @@ DEFINED_VARS = {
 }
 
 DEFINED_FUNCS = {
-    "sin": lambda x: Number(round(math.sin(x))),
-    "cos": lambda x: Number(round(math.cos(x))),
-    "tan": lambda x: Number(round(math.tan(x))),
-    "exp": lambda x: Number(round(math.exp(x))),
-    "abs": lambda x: Number(round(abs(x))),
-    "sqrt": lambda x: Number(round(math.sqrt(x))),
-    "log": lambda x: Number(round(math.log(x)))
+    "sin": lambda x: Number(round(math.sin(x), 3)),
+    "cos": lambda x: Number(round(math.cos(x), 3)),
+    "tan": lambda x: Number(round(math.tan(x), 3)),
+    "exp": lambda x: Number(round(math.exp(x), 3)),
+    "abs": lambda x: Number(round(abs(x), 3)),
+    "sqrt": lambda x: Number(round(math.sqrt(x), 3)),
+    "log": lambda x: Number(round(math.log(x), 3))
+}
+
+from math_types.function import SpecialCommand
+from math_types.commands import *
+
+SPECIAL_COMMANDS = {
+    "vars": SpecialCommand("vars", vars_command),
+    "funcs": SpecialCommand("funcs", funcs_command),
+    "plot": SpecialCommand("plot", plot_command),
+    "linreg": SpecialCommand("plot", linreg_command)
 }

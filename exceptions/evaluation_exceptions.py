@@ -23,6 +23,12 @@ class FunctionNotExists(EvalException):
         super(FunctionNotExists, self).__init__(message)
 
 
+class FunctionIsRecursive(EvalException):
+    def __init__(self, name):
+        message = "Function {} can't be defined because of recursion".format(name)
+        super(FunctionIsRecursive, self).__init__(message)
+
+
 class NoExpectedOperand(EvalException):
     def __init__(self, name):
         message = "No operand for operation {} ".format(name)
@@ -81,3 +87,8 @@ class MatrixIsNonInvertible(EvalException):
     def __init__(self, matrix):
         message = "Can't invert matrix:\n {}".format(matrix)
         super(MatrixIsNonInvertible, self).__init__(message)
+
+
+class WrongSpecialCommandUse(EvalException):
+    def __init__(self, message="Special command error"):
+        super(WrongSpecialCommandUse, self).__init__(message)
