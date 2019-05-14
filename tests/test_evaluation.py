@@ -632,6 +632,10 @@ def test_matrix_inversion():
     i.eval_string("C = [[1]; [2]; [3]]")
     i.eval_string("transp(K) - C")
 
+    # pivoting test
+    i.eval_string("S = [[0, 1]; [2, 3]]")
+    assert i.eval_string("inv(S) ** S") == i.eval_string("A")
+
 
 def test_special_commands_exceptions():
     i = Interpreter()

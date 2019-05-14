@@ -156,7 +156,9 @@ class Matrix(MathPrimitive):
                 non_zero_row = self._find_next_nonzero_row(matrix, col_idx, col_idx+1)
                 if non_zero_row is None:
                     raise MatrixIsNonInvertible(matrix)
-                matrix.matrix[cur_row], matrix.matrix[non_zero_row] = matrix.matrix[non_zero_row], matrix.matrix[cur_row]
+                matrix.matrix[col_idx], matrix.matrix[non_zero_row] = matrix.matrix[non_zero_row], matrix.matrix[col_idx]
+                inverted.matrix[col_idx], inverted.matrix[non_zero_row] = inverted.matrix[non_zero_row], inverted.matrix[col_idx]
+                cur_row = matrix.matrix[col_idx]
 
             for row_idx in range(col_idx+1, n):
                 coef = matrix.matrix[row_idx][col_idx] / cur_row[col_idx]
