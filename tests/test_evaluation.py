@@ -663,3 +663,25 @@ def test_recursive_func():
         i.eval_string("k(x) = g(x) + x")
         i.eval_string("s(x) = k(x)")
         i.eval_string("g(x) = s(x)")
+
+
+def test__0():
+    i = Interpreter()
+    with pytest.raises(WrongAssingmentLeftPart) as e:
+        i.eval_string("= 2")
+        i.eval_string("= x + 3 ?")
+        
+
+def test__1():
+    i = Interpreter()
+    with pytest.raises(UnexpectedToken) as e:
+        i.eval_string("f(z) = z * y,")
+
+
+def test__2():
+    i = Interpreter()
+    i.eval_string("x = 2")
+    i.eval_string("y = 2 * [[4, 2]]")
+    i.eval_string("f(z) = z * y")
+    assert i.eval_string("f(2)") == "[ 16, 8 ]"
+
