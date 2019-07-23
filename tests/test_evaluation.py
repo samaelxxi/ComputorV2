@@ -433,7 +433,7 @@ def test54():
     i.eval_string("f(x) = x + 2")
     i.eval_string("y = f(2)")
     i.eval_string("g(z) = z * y")
-    assert i.eval_string("g(z) = ?") == "z * y"
+    assert i.eval_string("g(z) = ?") == "z * 4"
 
 def test55():
     i = Interpreter()
@@ -679,7 +679,10 @@ def test__0():
 def test__1():
     i = Interpreter()
     with pytest.raises(UnexpectedToken) as e:
+        i.eval_string("z = 2")
+        i.eval_string("y = 3")
         i.eval_string("f(z) = z * y,")
+        i.eval_string("f(3) = ?")
 
 
 def test__2():
@@ -687,5 +690,15 @@ def test__2():
     i.eval_string("x = 2")
     i.eval_string("y = 2 * [[4, 2]]")
     i.eval_string("f(z) = z * y")
+    print(i.eval_string("f(z) = ?"))
     assert i.eval_string("f(2)") == "[ 16, 8 ]"
 
+
+def test__2():
+    i = Interpreter()
+    i.eval_string("x = 2")
+    i.eval_string("y = 2 * [[4, 2]]")
+    i.eval_string("f(z) = z * y")
+    i.eval_string("g(z) = z * [[8, 4]]")
+
+    assert i.eval_string("f(2)") == "[ 16, 8 ]"

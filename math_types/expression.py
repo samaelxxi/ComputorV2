@@ -56,11 +56,6 @@ class Expression:
         """
         Helper function for self.evaluate
         """
-        # if (len(self.body) == 1 and isinstance(self.body[0], Function) and  # stupid shit for correction stupid test
-        #         self.body[0].name in functions and isinstance(self.body[0].input.body[0], Variable)
-        #         and not any(var == self.body[0].input for var in variables.values())
-        #         and self.body[0].input == functions[self.body[0].name].input):
-        #     return functions[self.body[0].name]
         self._evaluate_matrices(variables, functions)
         self.evaluate_variables(variables)
         self._evaluate_functions(variables, functions)
@@ -88,7 +83,10 @@ class Expression:
             if isinstance(obj, Matrix):
                 for row_idx in range(obj.rows):
                     for col_idx in range(obj.cols):
-                        matrix_elem = obj.matrix[row_idx][col_idx].evaluate(variables, functions)
+                        if not isinstance(obj.matrix[row_idx][col_idx], (Number, ComplexNumber)):
+                            matrix_elem = obj.matrix[row_idx][col_idx].evaluate(variables, functions)
+                        else:
+                            matrix_elem = obj.matrix[row_idx][col_idx]
                         if not isinstance(matrix_elem, (Number, ComplexNumber)):
                             raise WrongMatrixElementType(matrix_elem)
                         obj.matrix[row_idx][col_idx] = matrix_elem

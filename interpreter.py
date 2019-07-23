@@ -1,6 +1,7 @@
 from exceptions import MathException, ParsingError, EvalException, TokenizationError
 from exceptions.parsing_exceptions import UnexpectedToken
-from exceptions.evaluation_exceptions import TooManyAssignments, WrongAssingmentLeftPart, WrongSpecialCommandUse, FunctionIsRecursive
+from exceptions.evaluation_exceptions import TooManyAssignments, WrongAssingmentLeftPart, \
+    WrongSpecialCommandUse, FunctionIsRecursive, FunctionNotExists
 from typing import Tuple, List
 from parsing.tokenizer import Tokenizer
 from parsing.parser import Parser
@@ -95,6 +96,11 @@ class Interpreter:
         elif op_type == "special":
             spec_comm = SPECIAL_COMMANDS[left[0].name]
             eval_res = spec_comm.evaluate(left[0].input, self._variables, self._functions)
+        elif op_type == "print_func":  # kostyl
+            if left[0].name not in self._functions:
+                raise FunctionNotExists(left[0].name)
+            f = self._functions[left[0].name]
+            return str(f.body)
         else:
             raise Exception("Shouldn't be here man")
 
@@ -109,7 +115,7 @@ class Interpreter:
         :return: string which describes assignment
         """
         if len(left) != 1:
-            raise WrongAssingmentLeftPart(left[0])
+            raise WrongAssingmentLeftPart(left[0] if len(left) else None)
         left = left[0]
 
         if isinstance(left, Variable):
@@ -188,6 +194,9 @@ class Interpreter:
 
         if Interpreter._is_special_command(left, right):
             op_type = "special"
+        elif (question_mark and len(right) == 1 and len(left) == 1 and isinstance(left[0], AFunction) and
+              len(left[0].input.body) == 1 and isinstance(left[0].input.body[0], Variable)):
+            op_type = "print_func"  # stupid case for function definition printing
         elif right is None or (question_mark and len(right) == 1):
             op_type = "evaluation"   # 'expression = ?' or no assignment operator line
         elif question_mark and len(right) > 1:
